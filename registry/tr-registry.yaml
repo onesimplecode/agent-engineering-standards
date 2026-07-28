@@ -77,6 +77,38 @@ requirements:
       (TR-GOV-006). Counters MITRE ATT&CK T1059 (Command and Scripting Interpreter)
       and T1195.002 executed through trusted developer tooling.
 
+  - id: TR-SEC-011
+    title: Content provenance tracked and trust derived fail-closed at retrieval
+    status: active
+    section: "Prompt Injection"
+    text: >
+      Content ingested into an agentic memory or RAG index must be tagged with its
+      source type at write time. Trust level is derived from source type via a
+      mapping defined in code (not stored as data), so a mapping revision is a code
+      change, not a migration. The mapping is fail-closed: only explicitly named
+      self-authored source types earn the most-trusted tier; any unrecognized or
+      unclassified type falls to the least-trusted tier, and content whose
+      provenance was never recorded is treated as unverified, equivalent to
+      untrusted. Provenance is validated at retrieval time, not only at ingest.
+      Untrusted and unverified content is quarantined data under TR-SEC-005 —
+      spotlighted at the reasoning boundary, never treated as instructions.
+
+  - id: TR-SEC-012
+    title: Strict LLM output-schema validation — reject, never coerce
+    status: active
+    section: "Prompt Injection"
+    text: >
+      Every field returned by a model call must pass both a type check and a
+      range/shape check before use. A field that fails either check must be
+      rejected, never silently coerced to a compatible type. Coercion can fail
+      open: Python's bool("false") evaluates to True because any non-empty string
+      is truthy, so a bare bool() cast on a model-returned string can flip a
+      relevance or safety gate the wrong way. A missing optional field is a
+      defined, valid state; a present field of the wrong type is not, and the two
+      must not share a fallback path. Pairs with TR-GOV-001's single-source-of-truth
+      convention — a strict parser for a given output schema is defined once and
+      used by every caller of that boundary.
+
   - id: TR-TEST-001
     title: TDD required for core logic
     status: active

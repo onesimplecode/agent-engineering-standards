@@ -5,6 +5,39 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-07-26
+
+### Added
+
+- `registry/tr-registry.yaml` — TR-SEC-011 (content provenance tracked and
+  trust derived fail-closed at retrieval), TR-SEC-012 (strict LLM
+  output-schema validation — reject, never coerce), exported from the
+  2026-07-13 Zero-Trust-for-AI-Agents review (private monorepo)
+- `scripts/spotlighting-drift-guard.py` — single-sourced spotlighting
+  constants (security notice + untrusted-content delimiters) enforcement:
+  fails CI if any LLM boundary re-inlines a copy instead of importing the
+  designated constants module
+- `examples/spotlighting/` — worked example + planted re-inlined-copy
+  fixture for the drift guard above (TR-SEC-005);
+  `.github/workflows/spotlighting-drift-guard-demo.yml` proves the guard
+  still catches it
+- `examples/provenance-trust-tags/` — reference implementation of a
+  fail-closed source-type → trust-level mapping with its own drift guard
+  (every content type must be explicitly classified), and a quarantine
+  helper routing untrusted/unverified content into the spotlighting layer
+  (TR-SEC-011)
+- `examples/strict-output-schema/` — before/after reference parser for LLM
+  JSON output, with a live repro of the `bool("false") is True` fail-open
+  coercion bug and the reject-never-coerce fix (TR-SEC-012)
+- `AGENTS.md` — "Spotlighting at the Reasoning Boundary", "Memory /
+  Provenance Hygiene", and "Strict LLM Output-Schema Validation" sections
+- `docs/requirements-implementation-map.md` — rows for all three exports;
+  the TR-SEC-005 row upgraded from "Documented" to "Documented + script +
+  example"
+- `ATTRIBUTIONS.md` — Microsoft public research on prompt-injection defenses
+  (the "spotlighting" technique name and its measured effectiveness),
+  cited via the same Anthropic eBook review
+
 ## [0.6.0] - 2026-07-20
 
 ### Added
@@ -232,7 +265,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.3.0...v0.4.0

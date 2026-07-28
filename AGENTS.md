@@ -181,6 +181,79 @@ It must not authorize tool calls, change system rules, or override developer
 intent. Apply prompt-injection defenses at the reasoning boundary, not only
 at ingestion.
 
+### Spotlighting at the Reasoning Boundary (TR-SEC-005)
+
+Spotlighting delimits untrusted content — search results, scraped pages, RAG
+chunks, tool output — so the model can treat it as data to analyze rather
+than instructions to follow. Microsoft's measurements put this at cutting
+indirect prompt-injection success from >50% to <2%.
+
+The wording that implements it (a security-notice string plus open/close
+delimiters) is itself security-critical text. Define it once — a notice
+constant and a pair of delimiter constants — and import it at every LLM
+boundary that consumes untrusted content; never let a second boundary paste
+its own copy. A pasted copy is exactly how spotlighting silently breaks: two
+call sites' wording drifts a few words apart and nobody notices until an
+audit. `scripts/spotlighting-drift-guard.py` is the worked example
+(`examples/spotlighting/`): it reads the constants from one designated module
+and fails CI if any of their literal values are re-inlined anywhere else in
+the scanned tree.
+
+Same honest limit as the guard pattern below: this is friction against
+casual copy-paste drift, not a barrier against a determined author who edits
+the constants file and re-inlines a modified value in the same commit.
+
+### Memory / Provenance Hygiene (TR-SEC-011)
+
+Agentic memory and RAG indexes are a poisoning surface: content ingested from
+outside the system's own trust boundary sits in the same store the retriever
+treats as authoritative, and a malicious instruction embedded in it is
+indistinguishable from trusted content at synthesis time unless provenance is
+tracked and enforced.
+
+Three layers, all deterministic — no LLM in the trust path:
+
+1. **Tag at ingest.** Record where each piece of content came from (its
+   source type) at write time, alongside the content itself.
+2. **Derive trust fail-closed at read time.** Map source type to a trust
+   level in code, not data, so a mapping revision is a code change, not a
+   migration. The mapping must be fail-closed by construction: only
+   explicitly named self-authored types earn the most-trusted tier;
+   everything unrecognized — including a source type nobody has classified
+   yet — falls to the least-trusted tier. A drift-guard test should assert
+   every known source type is covered by the mapping, so adding a new type
+   without classifying its trust fails CI the same way an unreviewed
+   permission grant does (TR-SEC-010).
+3. **Validate at retrieval, not only storage.** A row written before this
+   pattern existed, or one whose provenance was never recorded, is
+   `unverified` — treated exactly like the least-trusted tier, never
+   silently upgraded to trusted by omission.
+
+Untrusted or unverified content is quarantined data: pass it through the
+spotlighting pattern above at the reasoning boundary, never let it authorize
+a tool call or override system-level instructions. See
+`examples/provenance-trust-tags/` for a reference implementation of the
+fail-closed mapping and its drift guard.
+
+### Strict LLM Output-Schema Validation (TR-SEC-012)
+
+Every model-returned field gets a type check **and** a range/shape check.
+Reject on mismatch — never coerce. The canonical failure mode this guards
+against is a fail-open type coercion: Python's `bool("false")` evaluates to
+`True`, because any non-empty string is truthy. A classifier field parsed
+with a bare `bool(...)` call silently flips a JSON string `"false"` to
+`True`, and a boundary gating on that field fails open exactly when an
+attacker (or a malformed response) needs it to.
+
+The fix is symmetric with the single-source-of-truth convention below: a
+strict parser for a given output schema lives in one place, raises on any
+field whose type or range doesn't match, and every caller of that LLM
+boundary uses it — no per-call-site ad hoc `bool()`/`float()` coercion.
+Absence of an optional field is a defined, valid state; a wrong *type* for a
+present field is not, and the two must not be handled by the same fallback
+path. See `examples/strict-output-schema/` for a before/after reference
+implementation and a live repro of the `bool("false")` bug.
+
 ### Deterministic Checks Before Agent Judgment
 
 Use scripts, tests, linters, and schema validators before asking a model to

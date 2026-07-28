@@ -1,0 +1,54 @@
+name: Spotlighting drift guard demo (worked example)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/spotlighting-drift-guard.py'
+      - 'examples/spotlighting/**'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/spotlighting-drift-guard.py'
+      - 'examples/spotlighting/**'
+  workflow_dispatch: {}
+
+# ---------------------------------------------------------------------------
+# This job does NOT gate this repo's own source tree -- it proves that
+# spotlighting-drift-guard.py (TR-SEC-005) correctly catches the problem
+# planted in examples/spotlighting/violation_example.py: a second LLM
+# boundary that re-inlined the security-notice and delimiter strings instead
+# of importing them from spotlighting_constants.py (see
+# examples/spotlighting/README.md). Here, the guard *failing* on the fixture
+# is success; if it ever passes clean, the fixture or the guard itself has
+# regressed.
+#
+# A downstream user copies this pattern into their own repo's CI, pointed at
+# the module where their own spotlighting constants live and the source tree
+# that should never re-inline them.
+# ---------------------------------------------------------------------------
+
+permissions:
+  contents: read
+
+jobs:
+  demo-detects-drift:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+
+      - name: Assert spotlighting-drift-guard.py catches the planted re-inlined copy
+        run: |
+          set +e
+          python3 scripts/spotlighting-drift-guard.py --constants-file examples/spotlighting/spotlighting_constants.py --scan-root examples/spotlighting
+          code=$?
+          set -e
+          if [ "$code" -ne 1 ]; then
+            echo "::error::Expected exit 1 (re-inlined constant detected) against the fixture, got exit $code instead -- the fixture or the guard regressed."
+            exit 1
+          fi
+          echo "Confirmed: spotlighting-drift-guard.py correctly detected the planted re-inlined copy (exit 1)."

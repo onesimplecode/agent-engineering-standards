@@ -17,7 +17,7 @@ public reuse.
 | Machine-readable requirement registry (`registry/tr-registry.yaml`) | Production runtime or hosted services |
 | Portable agent conventions (`AGENTS.md`, `agents/`) | Tool-specific private agent sessions |
 | Governance and eval templates (ADR, impact assessment, maturity checklist, LLM eval, completion checklist) | Full application frameworks |
-| Reference scripts (config drift, debt tags, release validation, Cursor rule export, llms.txt manifest, agent permission guard) | Full `agent-skills` replacement |
+| Reference scripts (config drift, debt tags, release validation, Cursor rule export, llms.txt manifest, agent permission guard, spotlighting drift guard) | Full `agent-skills` replacement |
 | Synthetic worked example | Personal data |
 
 ## Quick start
@@ -40,6 +40,9 @@ python3 scripts/llms-txt-generator.py
 
 # Check an agent settings file's tool-permission grants against a reviewed baseline
 python3 scripts/agent-permission-guard.py --settings /path/to/your/settings.json
+
+# Check that spotlighting security-notice/delimiter constants aren't re-inlined elsewhere
+python3 scripts/spotlighting-drift-guard.py --constants-file /path/to/your/constants.py --scan-root /path/to/your/src
 ```
 
 ## Adopting this into your project
@@ -57,8 +60,11 @@ A step-by-step path for pulling these standards into your own repo, not just thi
 4. **Adopt templates as needed** — the ADR, impact assessment, maturity
    checklist, LLM eval, and completion checklist templates in
    [`templates/`](templates/) are meant to be copied, not just read.
-5. **Study the worked traces** — [`examples/worked-example/`](examples/worked-example/)
-   and [`examples/agent-permission-guard/`](examples/agent-permission-guard/) show
+5. **Study the worked traces** — [`examples/worked-example/`](examples/worked-example/),
+   [`examples/agent-permission-guard/`](examples/agent-permission-guard/),
+   [`examples/spotlighting/`](examples/spotlighting/),
+   [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/), and
+   [`examples/strict-output-schema/`](examples/strict-output-schema/) show
    a requirement moving end-to-end: TR-ID → ADR → maturity row → script → CI gate.
 6. **Reconcile with tools you already use** — [`docs/agent-skills-integration.md`](docs/agent-skills-integration.md)
    covers how this layers under AGENTS.md, agent-skills, and Cursor rules rather
@@ -81,6 +87,18 @@ security guardrail trace (TR-SEC-010): a planted wildcard grant and an
 unreviewed grant, both caught by `scripts/agent-permission-guard.py`'s
 co-located reviewed baseline — the "make dangerous changes loud, not
 impossible" pattern.
+
+See [`examples/spotlighting/`](examples/spotlighting/) for the untrusted-content
+delimiting trace (TR-SEC-005): a planted re-inlined copy of the
+security-notice/delimiter constants, caught by
+`scripts/spotlighting-drift-guard.py`'s single-source enforcement.
+
+See [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/) (TR-SEC-011)
+for the fail-closed content-trust derivation pattern — a drift-guarded mapping
+from source type to trust level — and
+[`examples/strict-output-schema/`](examples/strict-output-schema/) (TR-SEC-012) for
+a live repro of the `bool("false") is True` fail-open coercion bug and the
+reject-never-coerce fix.
 
 ## Public Evidence Map
 

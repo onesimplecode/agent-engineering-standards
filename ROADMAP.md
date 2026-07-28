@@ -100,23 +100,26 @@ maturity classes — this repo exports packaged practice, not aspirations.
 
 **Export-ready (shipped + tested in the private monorepo, 2026-07-13):**
 
-- [ ] **Spotlighting at the reasoning boundary** (private ADR-030,
+- [x] **Spotlighting at the reasoning boundary** (private ADR-030,
       private ADR-018): untrusted retrieved/external content is wrapped in
       explicit delimiters and every LLM call that sees it carries a firewall
       system message; the delimiter/notice strings are **single-sourced
       constants with a CI drift-guard test** that fails on any re-inlined copy
       — the drift guard is the enforceable artifact this repo ships
-- [ ] **Memory/provenance hygiene** — new TR-SEC entry (the registry's gap
+      (`scripts/spotlighting-drift-guard.py`, `examples/spotlighting/`)
+- [x] **Memory/provenance hygiene** — new TR-SEC entry (the registry's gap
       against agentic memory-poisoning): source-tag content at ingest, derive
       trust via a **fail-closed** mapping at read time (unknown → untrusted;
       missing → unverified), validate provenance at *retrieval* not only at
       storage, and treat unverified/external content as quarantined data,
       never instructions (private ADR-030's implementation is the reference)
-- [ ] **Strict LLM output-schema validation** pattern + worked example: type
+      (TR-SEC-011, `examples/provenance-trust-tags/`)
+- [x] **Strict LLM output-schema validation** pattern + worked example: type
       AND range checks on every model-returned field, reject — never coerce —
       wrong types (canonical bug: Python `bool("false") is True` failing open
       through a relevance gate; private ADR-018); pairs with the existing
       single-source-of-truth convention
+      (TR-SEC-012, `examples/strict-output-schema/`)
 
 **Roadmapped — export after the private implementation proves them
 (design-stage as of 2026-07-13; promotion to export requires the same

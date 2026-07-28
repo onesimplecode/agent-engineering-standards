@@ -27,6 +27,7 @@ and examples are maintainer-authored unless a file header states otherwise.
 | MITRE ATT&CK (https://attack.mitre.org/) and MITRE ATLAS (https://atlas.mitre.org/) | Public technique catalogs cited by TR-ID and by name in `registry/tr-registry.yaml` and `templates/threat-model.md` to give threat-model findings a shared, falsifiable vocabulary. No content reproduced beyond technique IDs and short names. |
 | Anthropic, "Zero Trust for AI Agents" (2026) | Source of the "impossible vs. tedious" design test (`templates/threat-model.md`, `AGENTS.md`) — the barrier-vs-friction classification of a mitigation's real strength. Concept adopted and reworded; no text reproduced. |
 | OWASP agentic application security guidance | Source of the "least agency" framing applied to TR-SEC-010 (`AGENTS.md`) — least privilege extended to what an agent tool can do, how often, and where. Concept and term adopted; no text reproduced. |
+| Microsoft public research on prompt-injection defenses | Source of the "spotlighting" technique name and its measured effectiveness (indirect prompt-injection success reduced from >50% to <2%), cited in `AGENTS.md`, `scripts/spotlighting-drift-guard.py`, and `examples/spotlighting/README.md` (TR-SEC-005) via Anthropic's *Zero Trust for AI Agents* eBook, which references the same figure. Technique name and effect-size figure cited; no text reproduced. |
 
 ## Standards (document shapes, not certification)
 
