@@ -1,5 +1,5 @@
 ---
-description: "LumiaForge AI engineering standards — Testing (TR-TEST-001, TR-TEST-002, TR-TEST-004, TR-TEST-005, TR-TEST-006)"
+description: "LumiaForge AI engineering standards — Testing (TR-TEST-001, TR-TEST-002, TR-TEST-004, TR-TEST-005, TR-TEST-006, TR-TEST-007)"
 alwaysApply: false
 ---
 
@@ -26,3 +26,7 @@ Each agent module that makes LLM calls should have a co-located tests/evals/test
 ## TR-TEST-006 — Post-write state change verification for agent actions
 
 Agent actions that produce external side effects, such as writing files, updating records, sending messages, or calling tools, should be followed by a deterministic verification step that confirms the observable state changed as expected.
+
+## TR-TEST-007 — Agent security-property claims verified against ground truth, not self-report
+
+A claim about an agent's own behavior — obtained only by asking the agent in conversation ("do you have tool X," "do you remember Y") — is not verification evidence for a security-relevant property: isolation between agents, a permission boundary, or memory/session scoping. An agent's self-report can produce a false pass when the question is answered by the wrong backend, a stale cache, or the agent's own (possibly incorrect) belief about its state, none of which is the property actually under test. Verify instead against the system's own ground truth — the target API's own list/read endpoint, a database row, a server log line — independent of what the agent under test reports. This is a security-property-specific instance of the general "verify before referencing" discipline (TR-GOV-001's single-source-of-truth cousin, applied to runtime claims rather than static code symbols): the authoritative source for whether an isolation boundary holds is the boundary's own enforcement point, never the agent's narration of it.

@@ -5,6 +5,45 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-07-31
+
+### Added
+
+- `registry/tr-registry.yaml` — TR-SEC-013 (two-layer isolation for
+  multi-agent tool and data access) and TR-TEST-007 (agent security-property
+  claims verified against ground truth, not self-report), exported from the
+  private-repo agent-platform deployment (private ADR-013, ADR-014).
+  TR-SEC-013 graduates the "Compartmentalization worked example" item
+  roadmapped since the 2026-07-13 Zero-Trust-for-AI-Agents review (private
+  ADR-031), now backed by a running, hands-on-verified implementation rather
+  than a design-only ADR; TR-TEST-007 is new content, motivated by two real
+  false passes in the ADR-014 spike where an isolation/memory-scoping check
+  "passed" only because the question was answered by the wrong backend, not
+  the mechanism actually under test
+- `examples/compartmentalized-agents/` — reference implementation:
+  `ToolRegistry` (tool-registry scope) + `DataStore` (data-layer scope),
+  with a test that deliberately misconfigures the tool layer and proves the
+  data layer alone still blocks the resulting call (the defense-in-depth
+  evidence, not just that both layers exist); `SelfReportingAgent`, with a
+  test showing its self-report gives a false pass on a real isolation leak
+  that `ToolRegistry.list_tools()` (ground truth) catches
+- `docs/ai-engineering-operating-model.md` — "Rollout Sequencing" section
+  (the layering rule: foundational infrastructure ships first, every later
+  phase immediately usable on arrival), also graduated from the 2026-07-13
+  review, second exemplar from private ADR-013's phased rollout table
+- `templates/completion-checklist.md` — "Ground-truth verification for agent
+  security claims" checklist item
+- `AGENTS.md` — "Compartmentalized Multi-Agent Isolation" and "Ground-Truth
+  Verification for Agent Security Claims" sections
+- `docs/requirements-implementation-map.md` — rows for all three exports above
+- `README.md` — `examples/compartmentalized-agents/` added to the worked-traces
+  list and "Enforced workflow" section
+
+Reviewed by a fresh-context reviewer agent before release: 0 blocking
+findings, 2 advisory (the `README.md` gap above, and two added test cases
+for previously-untested `DataStore`/`ToolRegistry` default-permission edge
+cases) — both fixed prior to this release.
+
 ## [0.7.0] - 2026-07-26
 
 ### Added
@@ -265,7 +304,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.4.0...v0.5.0

@@ -41,6 +41,24 @@ by humans and other agents.
 - **ADR lifecycle** preserves why a decision was made and how it can be
   superseded later.
 
+## Rollout Sequencing
+
+Multi-phase agent or platform builds ship in **layers**, not a single
+big-bang release: foundational, shared infrastructure ships first, and every
+subsequent phase is immediately usable the moment it lands — no phase should
+sit "mostly done," idling behind a later phase that hasn't been built yet.
+
+| Phase | Ships | Immediately usable as |
+|---|---|---|
+| Foundations | Shared infra (auth, storage, observability, backup) | The measurement/ops base every later phase is built on |
+| Capability A | First agent/workflow, fully wired end to end | A working, narrow slice — not a stub |
+| Capability B | Second agent/workflow, reusing Foundations | Independently usable even if a later Capability C is delayed |
+| Wrap-up | Docs, CI, reproducibility | A rebuildable system, not tribal knowledge |
+
+Each phase's own tests pass before the next phase starts — no phase is
+"mostly done." Documentation updates land in the same change as the phase
+they describe, not batched at the end.
+
 ## Repo-Time Controls
 
 - `scripts/check-config-consistency.py` catches retired model strings and

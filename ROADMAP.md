@@ -92,13 +92,15 @@ See `CHANGELOG.md` for shipped versions.
       examples, `docs/agent-skills-integration.md`) consolidating onboarding
       guidance that was previously scattered across the README and `docs/`
 
-## v0.7 — Agentic security & operations patterns (current)
+## v0.7 — Agentic security & operations patterns
+
+Released 2026-07-26 (`v0.7.0`).
 
 From the 2026-07-13 Zero-Trust-for-AI-Agents review (private ADRs: private-repo
-ADR-030/031/032, private-repo ADR-018, and a private-repo deployment proposal). Two
-maturity classes — this repo exports packaged practice, not aspirations.
-
-**Export-ready (shipped + tested in the private monorepo, 2026-07-13):**
+ADR-030/031/032, private-repo ADR-018, and a private-repo deployment proposal).
+The review identified nine candidate exports; three were export-ready and
+shipped in this release, six were design-only and deferred — see v0.8 (two of
+the six, now with running evidence) and Backlog (the remaining four) below.
 
 - [x] **Spotlighting at the reasoning boundary** (private ADR-030,
       private ADR-018): untrusted retrieved/external content is wrapped in
@@ -121,9 +123,88 @@ maturity classes — this repo exports packaged practice, not aspirations.
       single-source-of-truth convention
       (TR-SEC-012, `examples/strict-output-schema/`)
 
-**Roadmapped — export after the private implementation proves them
-(design-stage as of 2026-07-13; promotion to export requires the same
-evidence TR-SEC-010 had — commits, tests, an operating track record):**
+## v0.8 — Verified isolation & ground-truth testing
+
+Released 2026-07-31 (`v0.8.0`).
+
+From a private-repo agent-platform deployment (private ADR-013, ADR-014;
+2026-07-25 to 2026-07-29) — the first case of a `compartmentalization`-shaped
+design (private ADR-031, v0.7's own roadmapped item above) actually built,
+running, and hands-on verified rather than design-only. Three exports, one of
+them genuinely new content rather than a graduation:
+
+- [x] **Compartmentalization worked example** (graduates from v0.7's
+      roadmapped item, private ADR-031 → private ADR-013/014). Two-layer
+      isolation for a multi-agent system sharing one backing service: a
+      tool-registry scope (what's *offered* to each agent's own reasoning —
+      distinct credentials per agent, server-side authorization) sitting
+      above a data-layer scope (what's *reachable* even if the authorization
+      layer has a bug — e.g. per-agent DB roles). The two are defense in
+      depth, not redundant: neither alone is the full mitigation, extending
+      TR-SEC-010's least-agency framing from single-agent tool grants to
+      multi-agent tool + data boundaries. Also carries the corrected version
+      of the private ADR-031 promotion-gate story: a human-approval step was
+      dropped after review found it protected an action that wasn't the
+      actual security-relevant moment — kept in the worked example's README
+      as a caution against copying a control's *conclusion* without
+      re-checking whether its *reasoning* still holds.
+      Shipped as a **new registry entry** (TR-SEC-013 — a new ID read better
+      than amending TR-SEC-010, since multi-agent tool+data isolation is a
+      distinct claim from single-agent tool-grant restriction, matching how
+      TR-SEC-011/012 were each given their own entry rather than folded into
+      an existing one): `registry/tr-registry.yaml`,
+      `examples/compartmentalized-agents/` (`isolation.py` + a test proving
+      the data layer blocks a deliberately misconfigured tool layer —
+      the actual defense-in-depth proof, not just that both layers exist),
+      `AGENTS.md` "Compartmentalized Multi-Agent Isolation" section,
+      `docs/requirements-implementation-map.md` row.
+- [x] **Ground-truth verification for agent security-property claims** — new
+      pattern, not previously roadmapped. A claim about an agent's own
+      behavior, obtained only by asking the agent (chat transcript) — "do you
+      have tool X," "do you remember Y" — is not verification evidence for a
+      security-relevant property (isolation, permission boundary, memory
+      scoping). Verify against the system's own ground truth instead (the
+      target API's own list/read endpoint, a DB row, a server log line),
+      independent of what the agent under test reports. Motivated by two real
+      false passes in the ADR-014 spike: an isolation check that "passed" only
+      because the test question was routed to the wrong backend entirely (not
+      the one actually under test), caught only by querying the real memory
+      store's API directly instead of trusting the chat reply. This is a
+      sharper, agent-specific instance of the existing "verify before
+      referencing" / zero-hallucination discipline, applied to runtime
+      behavior claims rather than static code symbols.
+      Shipped as **TR-TEST-007** (new entry — distinct from TR-TEST-006's
+      write-effect verification, this covers self-report vs. ground truth for
+      a behavioral/security claim) in the "Testing" section; a checklist line
+      item in `templates/completion-checklist.md`; the
+      compartmentalized-agents example extended with `SelfReportingAgent`
+      (`isolation.py`) and a test showing its self-report gives a false pass
+      on an isolation leak that `ToolRegistry.list_tools()` — ground truth —
+      catches.
+- [x] **Layering rule** (graduates from v0.7's roadmapped item, second
+      exemplar: private ADR-013's Phase A → A.5 → B → C → D rollout table,
+      alongside the existing private deployment-proposal citation).
+      Foundational/shared infrastructure ships first; every subsequent phase
+      is immediately usable on arrival — no functionality idles behind an
+      unmet dependency, and no phase is "mostly done" before the next starts.
+      Shipped as a new "Rollout Sequencing" section in
+      `docs/ai-engineering-operating-model.md` with a genericized phase-table
+      shape, plus a `docs/requirements-implementation-map.md` row —
+      documented pattern, no new TR-ID (matches other "Documented"-only rows
+      in that map).
+
+All three shipped. Promotion bar, consistent with v0.7's rule: exported only
+once the private implementation has *running, hands-on evidence* behind it,
+not just an accepted design ADR — met here by ADR-014's spike outcome
+(2026-07-29).
+
+## Backlog — unscheduled
+
+Deferred from the 2026-07-13 Zero-Trust-for-AI-Agents review, design-stage
+only as of 2026-07-13 with no running implementation cited since. Not
+attached to any version — promotion requires the same bar as v0.7/v0.8: an
+operating track record in the private monorepo (commits, tests, hands-on
+evidence), not just an accepted design ADR.
 
 - [ ] **Disposition contract** — triage agents emit a structured disposition
       (query / think / report) as a loop-contract output field, extending
@@ -136,11 +217,6 @@ evidence TR-SEC-010 had — commits, tests, an operating track record):**
       coverage (fraction of agent outputs a human reviewed), and
       explainability-by-trigger-ID (every agent output cites the ID of its
       triggering event, a mandatory loop-contract field) (private-repo deployment proposal)
-- [ ] **Compartmentalization worked example** — the most-exposed agent gets
-      the fewest permissions (write-only into a quarantine zone), the
-      most-privileged agent gets no public egress, and promotion out of
-      quarantine is human-gated: agent proposes + safety report, human
-      approves, agent executes (private ADR-031)
 - [ ] **Human-gated model experimentation + dual-LLM review** — model
       adoption is a human judgment recorded as a reviewable config diff,
       never a runtime switch; critical calls may use a producer→reviewer
@@ -151,10 +227,6 @@ evidence TR-SEC-010 had — commits, tests, an operating track record):**
       keeping the dependency (Anthropic Zero-Trust eBook). **Unproven here**
       — export only after it has been practiced at least once in the private
       monorepo
-- [ ] **Layering rule** for agent/platform rollouts (operating-model doc):
-      foundational ops/observability ships first; every subsequent phase is
-      sized to be immediately usable — no functionality that idles behind
-      unmet dependencies (private-repo deployment proposal)
 
 ## Non-goals
 

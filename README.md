@@ -63,8 +63,9 @@ A step-by-step path for pulling these standards into your own repo, not just thi
 5. **Study the worked traces** — [`examples/worked-example/`](examples/worked-example/),
    [`examples/agent-permission-guard/`](examples/agent-permission-guard/),
    [`examples/spotlighting/`](examples/spotlighting/),
-   [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/), and
-   [`examples/strict-output-schema/`](examples/strict-output-schema/) show
+   [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/),
+   [`examples/strict-output-schema/`](examples/strict-output-schema/), and
+   [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/) show
    a requirement moving end-to-end: TR-ID → ADR → maturity row → script → CI gate.
 6. **Reconcile with tools you already use** — [`docs/agent-skills-integration.md`](docs/agent-skills-integration.md)
    covers how this layers under AGENTS.md, agent-skills, and Cursor rules rather
@@ -99,6 +100,13 @@ from source type to trust level — and
 [`examples/strict-output-schema/`](examples/strict-output-schema/) (TR-SEC-012) for
 a live repro of the `bool("false") is True` fail-open coercion bug and the
 reject-never-coerce fix.
+
+See [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/)
+for the two-layer multi-agent isolation trace (TR-SEC-013) — a simulated
+tool-registry misconfiguration that a per-agent data-layer role alone still
+blocks — and the ground-truth-vs-self-report trace (TR-TEST-007): an agent's
+own claim about its tool access shown giving a false pass that only the tool
+registry's actual state catches.
 
 ## Public Evidence Map
 

@@ -254,6 +254,57 @@ present field is not, and the two must not be handled by the same fallback
 path. See `examples/strict-output-schema/` for a before/after reference
 implementation and a live repro of the `bool("false")` bug.
 
+### Compartmentalized Multi-Agent Isolation (TR-SEC-013)
+
+When multiple agents share one backing service — a tool surface and the data
+behind it — isolate them at **two independent layers**, not one:
+
+1. **Tool-registry / authorization scope** — a distinct credential per agent,
+   with the server (not the agent) deciding which tools that credential may
+   invoke. This bounds what is *offered* to a given agent's own reasoning.
+2. **Data-layer scope** — a per-agent role on the underlying store (database
+   role, file-system mount, or equivalent), enforced independently of
+   whatever the authorization layer believes it has granted. This bounds
+   what is *reachable* even if layer 1 has a bug.
+
+Neither layer substitutes for the other. A tool-registry bug (a stray
+wildcard registration, a misrouted credential map) can hand an agent a tool
+it should never have gotten — the data-layer role is what still blocks the
+resulting call. A data layer with no tool-registry scope would still let a
+compromised or over-broad tool call reach everything a shared credential can
+see. Assign both layers by exposure: the agent with an external input path
+(internet, untrusted user messages) gets the narrowest grant at both layers;
+the most broadly-privileged agent gets no external egress at all. See
+`examples/compartmentalized-agents/` for a reference implementation,
+including a test that simulates a tool-registry bug and shows the data layer
+still holds the line.
+
+When reusing a prior isolation design (an existing threat model, a past ADR)
+for a new agent split, re-verify its *reasoning* still holds before carrying
+its conclusions forward — a control copied without re-checking why it existed
+can turn into process weight that closes no actual gap.
+
+### Ground-Truth Verification for Agent Security Claims (TR-TEST-007)
+
+An agent's own self-report is not verification evidence for a
+security-relevant property — isolation between agents, a permission
+boundary, memory or session scoping. Asking an agent in conversation ("do
+you have tool X," "do you remember Y") can produce a false pass: the
+question may be answered by the wrong backend, a stale cache, or the agent's
+own incorrect belief about its state, none of which is the property actually
+under test.
+
+Verify instead against the system's own ground truth — the target
+component's own list/read endpoint, a database row, a server log line —
+independent of what the agent under test reports. This is the
+security-property-specific form of the general "verify before referencing"
+discipline: the authoritative source for whether a boundary holds is the
+boundary's own enforcement point, never an agent's narration of it. See
+`examples/compartmentalized-agents/` for a reference implementation, where a
+`SelfReportingAgent`'s claim about its own tool access is shown to drift out
+of sync with the tool registry's actual state — the registry, not the
+agent's claim, is ground truth.
+
 ### Deterministic Checks Before Agent Judgment
 
 Use scripts, tests, linters, and schema validators before asking a model to
