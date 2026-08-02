@@ -15,6 +15,13 @@ Check every relevant dimension:
 6. **Architecture** — ADR present when a decision is significant.
 7. **Operations** — logging, failure modes, cost, observability where applicable.
 
+## Completion Checklist Verification
+
+When a `templates/completion-checklist.md` is attached to the handoff, do not
+accept its evidence column at face value. Spot-check at least one cited
+file:line per item against the actual diff. A citation that does not support
+its claim is a blocking issue, not an advisory one.
+
 ## Output Format
 
 ```markdown
