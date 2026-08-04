@@ -28,6 +28,12 @@ change summary or pull request description with evidence for each item.
 - [ ] **Post-write verification** — persistent writes or external side effects
   have an observable verification step, not only a successful return value.
 
+- [ ] **Ground-truth verification for agent security claims** — if this task
+  verified an isolation, permission, or memory-scoping property of an agent,
+  the evidence is a direct read of the enforcement point (an API, a database
+  row, a log line), not the agent's own self-report in conversation. N/A if
+  this task made no such claim.
+
 - [ ] **Reviewer scope complete** — the reviewer prompt enumerated all changed
   artifact types: source files, test files, AND docs / ADRs / agent-instruction
   files. A review covering only code is incomplete when docs were also changed.
@@ -44,6 +50,7 @@ Fill in per item before committing:
 | First-party symbols | |
 | Data flow trace | |
 | Post-write verification | |
+| Ground-truth verification for agent security claims | |
 | Reviewer scope complete | |
 
 ## Gap Log

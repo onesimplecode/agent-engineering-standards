@@ -11,7 +11,12 @@ concrete artifacts. It is intentionally limited to public, reusable evidence.
 | Loop contracts | Required four-field node contract + reference implementation | Documented + example | `AGENTS.md`, `registry/tr-registry.yaml`, `examples/engine-interface/` |
 | Trigger classification | ADR-triggered trigger type | Documented + example | `examples/worked-example/`, `templates/adr.md` |
 | Behavioral mode declaration | Named, trigger-activated mode contract orthogonal to gate strictness | Documented | `AGENTS.md`, `registry/tr-registry.yaml` |
-| External content trust boundary | Retrieved content treated as data | Documented | `AGENTS.md`, `registry/tr-registry.yaml` |
+| External content trust boundary (spotlighting) | Retrieved content treated as data; single-sourced security-notice + delimiter constants with a CI drift guard that fails on any re-inlined copy | Documented + script + example | `AGENTS.md`, `registry/tr-registry.yaml`, `scripts/spotlighting-drift-guard.py`, `examples/spotlighting/`, `.github/workflows/spotlighting-drift-guard-demo.yml` |
+| Memory/provenance hygiene | Source-tag at ingest, fail-closed trust derivation at read time, validated at retrieval, unverified/external content quarantined | Documented + registry + example | `AGENTS.md`, `registry/tr-registry.yaml` (TR-SEC-011), `examples/provenance-trust-tags/` |
+| Strict LLM output-schema validation | Type and range checks on every model-returned field; reject, never coerce | Documented + registry + example | `AGENTS.md`, `registry/tr-registry.yaml` (TR-SEC-012), `examples/strict-output-schema/` |
+| Compartmentalized multi-agent isolation | Two independent layers (tool-registry scope + data-layer scope) for agents sharing one backing service; a test proves layer 2 blocks a simulated layer-1 misconfiguration | Documented + registry + example | `AGENTS.md`, `registry/tr-registry.yaml` (TR-SEC-013), `examples/compartmentalized-agents/` |
+| Ground-truth verification for agent security claims | An agent's self-report is not verification evidence for an isolation/permission/memory-scoping claim; verify against the enforcement point's own state | Documented + registry + template + example | `AGENTS.md`, `registry/tr-registry.yaml` (TR-TEST-007), `templates/completion-checklist.md`, `examples/compartmentalized-agents/` |
+| Rollout sequencing (layering rule) | Foundational/shared infrastructure ships first; every later phase immediately usable on arrival, no phase idling behind an unmet dependency | Documented | `docs/ai-engineering-operating-model.md` |
 | Design-time threat modeling | Trust boundaries, data classification, and ATT&CK/ATLAS technique mapping required for new listeners/credentials/tool grants/content sources | Template + example | `templates/threat-model.md`, `examples/worked-example/docs/decisions/ADR-004-example.md` |
 | Impossible vs. tedious control classification | Every threat-model mitigation classified barrier vs. friction, with a named backstop for friction controls | Documented + template | `AGENTS.md`, `templates/threat-model.md` |
 | Least agency / agent permission grants | No wildcard write/install/exec/network grants in agent allowlists | Documented | `AGENTS.md`, `registry/tr-registry.yaml` |
@@ -20,7 +25,7 @@ concrete artifacts. It is intentionally limited to public, reusable evidence.
 | LLM eval convention | Co-located golden eval files guarded by `LLM_EVAL=true` | Template | `templates/llm-eval.md`, `AGENTS.md` |
 | Post-write verification | Persistent side effects require observable verification | Template + documented | `templates/completion-checklist.md`, `AGENTS.md` |
 | Provider prompt portability | Provider-specific system prompt variants isolated from business logic | Documented | `AGENTS.md` |
-| Completion self-critique | Acceptance coverage, tests, symbol verification, data flow, and verification | Template | `templates/completion-checklist.md` |
+| Completion self-critique | Acceptance coverage, tests, symbol verification, data flow, and verification; reviewer spot-checks cited file:line evidence against the diff | Template + role contract | `templates/completion-checklist.md`, `agents/reviewer.md` |
 | ADR discipline | Standard decision template | Template | `templates/adr.md` |
 | AI impact assessment | Affected parties, data, harms, mitigations | Template | `templates/ai-impact-assessment.md` |
 | Maturity tracking | Per-app checklist pattern | Template | `templates/maturity-checklist.md` |

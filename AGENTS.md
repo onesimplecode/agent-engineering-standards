@@ -181,6 +181,130 @@ It must not authorize tool calls, change system rules, or override developer
 intent. Apply prompt-injection defenses at the reasoning boundary, not only
 at ingestion.
 
+### Spotlighting at the Reasoning Boundary (TR-SEC-005)
+
+Spotlighting delimits untrusted content — search results, scraped pages, RAG
+chunks, tool output — so the model can treat it as data to analyze rather
+than instructions to follow. Microsoft's measurements put this at cutting
+indirect prompt-injection success from >50% to <2%.
+
+The wording that implements it (a security-notice string plus open/close
+delimiters) is itself security-critical text. Define it once — a notice
+constant and a pair of delimiter constants — and import it at every LLM
+boundary that consumes untrusted content; never let a second boundary paste
+its own copy. A pasted copy is exactly how spotlighting silently breaks: two
+call sites' wording drifts a few words apart and nobody notices until an
+audit. `scripts/spotlighting-drift-guard.py` is the worked example
+(`examples/spotlighting/`): it reads the constants from one designated module
+and fails CI if any of their literal values are re-inlined anywhere else in
+the scanned tree.
+
+Same honest limit as the guard pattern below: this is friction against
+casual copy-paste drift, not a barrier against a determined author who edits
+the constants file and re-inlines a modified value in the same commit.
+
+### Memory / Provenance Hygiene (TR-SEC-011)
+
+Agentic memory and RAG indexes are a poisoning surface: content ingested from
+outside the system's own trust boundary sits in the same store the retriever
+treats as authoritative, and a malicious instruction embedded in it is
+indistinguishable from trusted content at synthesis time unless provenance is
+tracked and enforced.
+
+Three layers, all deterministic — no LLM in the trust path:
+
+1. **Tag at ingest.** Record where each piece of content came from (its
+   source type) at write time, alongside the content itself.
+2. **Derive trust fail-closed at read time.** Map source type to a trust
+   level in code, not data, so a mapping revision is a code change, not a
+   migration. The mapping must be fail-closed by construction: only
+   explicitly named self-authored types earn the most-trusted tier;
+   everything unrecognized — including a source type nobody has classified
+   yet — falls to the least-trusted tier. A drift-guard test should assert
+   every known source type is covered by the mapping, so adding a new type
+   without classifying its trust fails CI the same way an unreviewed
+   permission grant does (TR-SEC-010).
+3. **Validate at retrieval, not only storage.** A row written before this
+   pattern existed, or one whose provenance was never recorded, is
+   `unverified` — treated exactly like the least-trusted tier, never
+   silently upgraded to trusted by omission.
+
+Untrusted or unverified content is quarantined data: pass it through the
+spotlighting pattern above at the reasoning boundary, never let it authorize
+a tool call or override system-level instructions. See
+`examples/provenance-trust-tags/` for a reference implementation of the
+fail-closed mapping and its drift guard.
+
+### Strict LLM Output-Schema Validation (TR-SEC-012)
+
+Every model-returned field gets a type check **and** a range/shape check.
+Reject on mismatch — never coerce. The canonical failure mode this guards
+against is a fail-open type coercion: Python's `bool("false")` evaluates to
+`True`, because any non-empty string is truthy. A classifier field parsed
+with a bare `bool(...)` call silently flips a JSON string `"false"` to
+`True`, and a boundary gating on that field fails open exactly when an
+attacker (or a malformed response) needs it to.
+
+The fix is symmetric with the single-source-of-truth convention below: a
+strict parser for a given output schema lives in one place, raises on any
+field whose type or range doesn't match, and every caller of that LLM
+boundary uses it — no per-call-site ad hoc `bool()`/`float()` coercion.
+Absence of an optional field is a defined, valid state; a wrong *type* for a
+present field is not, and the two must not be handled by the same fallback
+path. See `examples/strict-output-schema/` for a before/after reference
+implementation and a live repro of the `bool("false")` bug.
+
+### Compartmentalized Multi-Agent Isolation (TR-SEC-013)
+
+When multiple agents share one backing service — a tool surface and the data
+behind it — isolate them at **two independent layers**, not one:
+
+1. **Tool-registry / authorization scope** — a distinct credential per agent,
+   with the server (not the agent) deciding which tools that credential may
+   invoke. This bounds what is *offered* to a given agent's own reasoning.
+2. **Data-layer scope** — a per-agent role on the underlying store (database
+   role, file-system mount, or equivalent), enforced independently of
+   whatever the authorization layer believes it has granted. This bounds
+   what is *reachable* even if layer 1 has a bug.
+
+Neither layer substitutes for the other. A tool-registry bug (a stray
+wildcard registration, a misrouted credential map) can hand an agent a tool
+it should never have gotten — the data-layer role is what still blocks the
+resulting call. A data layer with no tool-registry scope would still let a
+compromised or over-broad tool call reach everything a shared credential can
+see. Assign both layers by exposure: the agent with an external input path
+(internet, untrusted user messages) gets the narrowest grant at both layers;
+the most broadly-privileged agent gets no external egress at all. See
+`examples/compartmentalized-agents/` for a reference implementation,
+including a test that simulates a tool-registry bug and shows the data layer
+still holds the line.
+
+When reusing a prior isolation design (an existing threat model, a past ADR)
+for a new agent split, re-verify its *reasoning* still holds before carrying
+its conclusions forward — a control copied without re-checking why it existed
+can turn into process weight that closes no actual gap.
+
+### Ground-Truth Verification for Agent Security Claims (TR-TEST-007)
+
+An agent's own self-report is not verification evidence for a
+security-relevant property — isolation between agents, a permission
+boundary, memory or session scoping. Asking an agent in conversation ("do
+you have tool X," "do you remember Y") can produce a false pass: the
+question may be answered by the wrong backend, a stale cache, or the agent's
+own incorrect belief about its state, none of which is the property actually
+under test.
+
+Verify instead against the system's own ground truth — the target
+component's own list/read endpoint, a database row, a server log line —
+independent of what the agent under test reports. This is the
+security-property-specific form of the general "verify before referencing"
+discipline: the authoritative source for whether a boundary holds is the
+boundary's own enforcement point, never an agent's narration of it. See
+`examples/compartmentalized-agents/` for a reference implementation, where a
+`SelfReportingAgent`'s claim about its own tool access is shown to drift out
+of sync with the tool registry's actual state — the registry, not the
+agent's claim, is ground truth.
+
 ### Deterministic Checks Before Agent Judgment
 
 Use scripts, tests, linters, and schema validators before asking a model to

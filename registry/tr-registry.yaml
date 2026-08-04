@@ -77,6 +77,62 @@ requirements:
       (TR-GOV-006). Counters MITRE ATT&CK T1059 (Command and Scripting Interpreter)
       and T1195.002 executed through trusted developer tooling.
 
+  - id: TR-SEC-011
+    title: Content provenance tracked and trust derived fail-closed at retrieval
+    status: active
+    section: "Prompt Injection"
+    text: >
+      Content ingested into an agentic memory or RAG index must be tagged with its
+      source type at write time. Trust level is derived from source type via a
+      mapping defined in code (not stored as data), so a mapping revision is a code
+      change, not a migration. The mapping is fail-closed: only explicitly named
+      self-authored source types earn the most-trusted tier; any unrecognized or
+      unclassified type falls to the least-trusted tier, and content whose
+      provenance was never recorded is treated as unverified, equivalent to
+      untrusted. Provenance is validated at retrieval time, not only at ingest.
+      Untrusted and unverified content is quarantined data under TR-SEC-005 —
+      spotlighted at the reasoning boundary, never treated as instructions.
+
+  - id: TR-SEC-012
+    title: Strict LLM output-schema validation — reject, never coerce
+    status: active
+    section: "Prompt Injection"
+    text: >
+      Every field returned by a model call must pass both a type check and a
+      range/shape check before use. A field that fails either check must be
+      rejected, never silently coerced to a compatible type. Coercion can fail
+      open: Python's bool("false") evaluates to True because any non-empty string
+      is truthy, so a bare bool() cast on a model-returned string can flip a
+      relevance or safety gate the wrong way. A missing optional field is a
+      defined, valid state; a present field of the wrong type is not, and the two
+      must not share a fallback path. Pairs with TR-GOV-001's single-source-of-truth
+      convention — a strict parser for a given output schema is defined once and
+      used by every caller of that boundary.
+
+  - id: TR-SEC-013
+    title: Two-layer isolation for multi-agent tool and data access
+    status: active
+    section: "Agent Security"
+    text: >
+      When multiple agents share one backing service (a tool surface and the
+      data behind it), isolation must be enforced at two independent layers,
+      not one. Layer one is the tool-registry/authorization scope — distinct
+      credentials per agent, with the server deciding which tools each
+      credential may even invoke; this bounds what is *offered* to a given
+      agent's own reasoning. Layer two is the data-layer scope — per-agent
+      database roles or equivalent, bounding what is *reachable* regardless
+      of what the authorization layer believes it has granted. Neither layer
+      is a substitute for the other: a bug in the tool-registry layer (a
+      stray wildcard registration, a misrouted credential map) can hand an
+      agent a tool it should never have received, and the data-layer role is
+      what still blocks the resulting call; a data layer alone, with no
+      tool-registry scope, would still let a compromised or over-broad tool
+      call reach every table a shared credential can see. Extends TR-SEC-010's
+      least-agency principle from single-agent tool grants to multi-agent
+      tool *and* data boundaries. The most-exposed agent (the one with an
+      external input path) gets the narrowest grant at both layers; the most
+      broadly-privileged agent gets no external egress at all.
+
   - id: TR-TEST-001
     title: TDD required for core logic
     status: active
@@ -166,6 +222,27 @@ requirements:
       updating records, sending messages, or calling tools, should be followed by
       a deterministic verification step that confirms the observable state
       changed as expected.
+
+  - id: TR-TEST-007
+    title: Agent security-property claims verified against ground truth, not self-report
+    status: active
+    section: "Testing"
+    text: >
+      A claim about an agent's own behavior — obtained only by asking the agent
+      in conversation ("do you have tool X," "do you remember Y") — is not
+      verification evidence for a security-relevant property: isolation between
+      agents, a permission boundary, or memory/session scoping. An agent's
+      self-report can produce a false pass when the question is answered by the
+      wrong backend, a stale cache, or the agent's own (possibly incorrect)
+      belief about its state, none of which is the property actually under
+      test. Verify instead against the system's own ground truth — the target
+      API's own list/read endpoint, a database row, a server log line —
+      independent of what the agent under test reports. This is a
+      security-property-specific instance of the general "verify before
+      referencing" discipline (TR-GOV-001's single-source-of-truth cousin,
+      applied to runtime claims rather than static code symbols): the
+      authoritative source for whether an isolation boundary holds is the
+      boundary's own enforcement point, never the agent's narration of it.
 
   - id: TR-GOV-001
     title: Config/model-string consistency check
