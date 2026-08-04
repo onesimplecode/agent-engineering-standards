@@ -198,6 +198,13 @@ once the private implementation has *running, hands-on evidence* behind it,
 not just an accepted design ADR — met here by ADR-014's spike outcome
 (2026-07-29).
 
+## v0.8.1 — Reviewer evidence spot-check
+
+Released 2026-08-03 (`v0.8.1`). Patch release — no new roadmap theme.
+
+- [x] `agents/reviewer.md` requires spot-checking completion-checklist
+      file:line citations against the diff (blocking on unsupported claims)
+
 ## Backlog — unscheduled
 
 Deferred from the 2026-07-13 Zero-Trust-for-AI-Agents review, design-stage

@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-08-03
+
+### Changed
+
+- `agents/reviewer.md` — require the reviewer to spot-check completion-
+  checklist evidence: when a `templates/completion-checklist.md` is attached
+  to the handoff, verify at least one cited file:line per item against the
+  actual diff; a citation that does not support its claim is a blocking
+  issue, not advisory. Closes a rubber-stamp gap where the developer
+  self-certified evidence the reviewer never re-checked
+- `docs/requirements-implementation-map.md` — completion self-critique row
+  upgraded to "Template + role contract" and cites `agents/reviewer.md`
+- `.gitignore` — ignore in-tree `.venv/` so a local release-check virtualenv
+  cannot trip `public-export-check.py`
+
 ## [0.8.0] - 2026-07-31
 
 ### Added
@@ -304,7 +319,8 @@ cases) — both fixed prior to this release.
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.5.0...v0.6.0

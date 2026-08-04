@@ -25,7 +25,7 @@ concrete artifacts. It is intentionally limited to public, reusable evidence.
 | LLM eval convention | Co-located golden eval files guarded by `LLM_EVAL=true` | Template | `templates/llm-eval.md`, `AGENTS.md` |
 | Post-write verification | Persistent side effects require observable verification | Template + documented | `templates/completion-checklist.md`, `AGENTS.md` |
 | Provider prompt portability | Provider-specific system prompt variants isolated from business logic | Documented | `AGENTS.md` |
-| Completion self-critique | Acceptance coverage, tests, symbol verification, data flow, and verification | Template | `templates/completion-checklist.md` |
+| Completion self-critique | Acceptance coverage, tests, symbol verification, data flow, and verification; reviewer spot-checks cited file:line evidence against the diff | Template + role contract | `templates/completion-checklist.md`, `agents/reviewer.md` |
 | ADR discipline | Standard decision template | Template | `templates/adr.md` |
 | AI impact assessment | Affected parties, data, harms, mitigations | Template | `templates/ai-impact-assessment.md` |
 | Maturity tracking | Per-app checklist pattern | Template | `templates/maturity-checklist.md` |
