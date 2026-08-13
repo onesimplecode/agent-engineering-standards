@@ -175,6 +175,11 @@ requirements:
       and resource budget before implementation. Nodes exposed as MCP tools additionally
       declare four tool annotation hints (readOnlyHint, destructiveHint, idempotentHint,
       openWorldHint) describing blast radius — required only for MCP-exposed nodes.
+      Annotations must be earned, not merely asserted: each hint names a property the
+      implementation actually has, and the test suite must demonstrate it (e.g.
+      idempotentHint requires a real no-op path). Declaring a hint without the property
+      is a protocol violation — callers that retry on a false idempotentHint will amplify
+      damage.
 
   - id: TR-AGT-002
     title: Deterministic operations use scripts not agents
@@ -202,6 +207,50 @@ requirements:
       an agent approaches a task, orthogonal to process-intensity gate strictness. Each
       mode declares a trigger, activated behavior, exit condition, and precedence
       (safety and process-intensity rules always win on conflict).
+
+  - id: TR-AGT-006
+    title: Deterministic post-processing over agentic bookkeeping
+    status: active
+    section: "Agent Spawning"
+    text: >
+      Agents author content; deterministic code owns structure, indexes, metadata
+      repair, and link integrity. Do not expose bookkeeping that a script can perform
+      reliably as an agent tool the agent may forget to call. Reference shape: a single
+      organize pass (heal → index sync → link check) shared by hook, schedule, CLI,
+      and a read-only health tool.
+
+  - id: TR-AGT-007
+    title: Self-healing metadata with enrichment marker
+    status: active
+    section: "Agent Spawning"
+    text: >
+      When validating persistent records (e.g. note frontmatter), repair missing
+      required fields deterministically and flag inventions with an explicit
+      enrichment marker (e.g. `*_generated: true`) rather than rejecting the record.
+      Remapping a legacy key to its current name is not an invention and must not set
+      the marker. Later agent or human enrichment can target flagged records.
+
+  - id: TR-AGT-008
+    title: Split agent capabilities by determinism
+    status: active
+    section: "Agent Spawning"
+    text: >
+      Classify each capability into one of four tiers before choosing an agent surface:
+      (1) invisible/automatic — no agent surface; (2) agent-invocable tools — genuine
+      judgment calls only; (3) a thin policy skill — instructions for using existing
+      tools well; (4) a CLI that works with no agent present. Deciding test, verbatim:
+      if the agent can forget to run it, it isn't deterministic bookkeeping — it's
+      another judgment call.
+
+  - id: TR-AGT-009
+    title: Event hooks carry cheap work; schedules carry expensive LLM work
+    status: active
+    section: "Agent Spawning"
+    text: >
+      Fire cheap deterministic work from event hooks (post-write heal, index sync).
+      Batch expensive LLM work on a schedule so cost is a function of time, not event
+      volume — N LLM calls in one sitting leave N−1 immediately superseded. Do not
+      attach an LLM call to every ingest or edit event by default.
 
   - id: TR-TEST-005
     title: LLM eval files co-located with agent modules

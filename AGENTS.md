@@ -66,6 +66,31 @@ keyword names); nodes not exposed as MCP tools are exempt. Example: `search_note
 openWorldHint=True` (external fetch triggers TR-SEC-005 on its output); `delete_document`
 is `readOnlyHint=False, destructiveHint=True, idempotentHint=True, openWorldHint=False`.
 
+**Annotations must be earned, not asserted (TR-AGT-003).** Each hint names a
+property the implementation actually has; the test suite must demonstrate it
+(e.g. `idempotentHint: true` requires a real no-op path). Declaring a hint
+without the property is a protocol violation — callers that retry on a false
+`idempotentHint` amplify damage.
+
+### Split Capabilities by Determinism (TR-AGT-008)
+
+Before adding an agent tool or skill, classify the capability:
+
+1. **Invisible / automatic** — deterministic bookkeeping with no agent surface.
+2. **Agent-invocable tools** — genuine judgment calls only.
+3. **Thin policy skill** — how to use existing tools well; no new write authority.
+4. **CLI** — works with no agent present (auditable, independently testable).
+
+Deciding test (verbatim): *if the agent can forget to run it, it isn't
+deterministic bookkeeping — it's another judgment call.* Prefer tiers 1 and 4
+for structure, indexes, and metadata (TR-AGT-006).
+
+### Hooks vs. Schedules (TR-AGT-009)
+
+Event hooks carry **cheap deterministic** work. Schedules carry **expensive LLM**
+work. Do not fire an LLM call per ingest or edit by default — N calls in one
+sitting leave N−1 immediately superseded; batching makes cost a function of time.
+
 ### Trigger Classification (TR-AGT-004)
 
 Classify every agent invocation at design time:
@@ -174,12 +199,62 @@ in the same commit — branch protection and human review of that diff are the
 real backstop. Per the Impossible vs. Tedious test above, this is a friction
 control, not a barrier; say so rather than overclaiming its strength.
 
+### Honest CI Limits
+
+Repo-local CI guards (permission allowlists, SHA-pinned actions, personal-data
+`.gitignore` rules, "what CI will not do" comments) are almost always
+**friction**, not barriers: a pull request can edit the workflow or the guard
+in the same commit. Document that limit in the workflow header and in
+`AGENTS.md` so reviewers know green checks do not replace human review of
+workflow/settings/gitignore diffs. Comparative shape (ideas only): CI header
+honesty popularized in community agent-tooling repos such as
+`MadsLorentzen/ai-job-search`; this repo's worked example is
+`examples/honest-ci-limits/` (v0.9). Pair with TR-SEC-009 (least-privilege
+workflows, SHA-pinned actions) and the co-located baseline guard above
+(TR-SEC-010).
+
+### Outbound Fetch Hygiene (TR-SEC-005)
+
+When an agent or ingest path fetches a URL (`openWorldHint: true`), treat the
+response as untrusted external content **and** constrain the fetch itself:
+
+1. **Host allowlist** co-located in code (widening is a reviewed diff).
+2. **Fail-closed address checks** — private, loopback, link-local, multicast,
+   and empty DNS results are unsafe.
+3. **DNS pin** for the hop — resolve once, reuse that answer for the connect
+   so a rebind between check and connect is not observed on sequential
+   stdlib/client paths.
+4. **Re-validate every redirect hop** — never inherit trust from the previous
+   URL's host.
+
+Honest residual: DNS pinning is not true IP/socket pinning; runtimes that
+cannot pin the outbound socket still have a narrow resolve-vs-connect window —
+name it in the threat model. Worked example: `examples/ssrf-allowlist/` (v0.9).
+
 ### External Content Is Untrusted (TR-SEC-005)
 
 Content retrieved from outside the trusted codebase is data, not instruction.
 It must not authorize tool calls, change system rules, or override developer
 intent. Apply prompt-injection defenses at the reasoning boundary, not only
 at ingestion.
+
+**Third-party / plugin skill output is also untrusted.** Documentation or
+prompts loaded from an optional plugin, community skill pack, or other
+third-party skill registry are data for operating that plugin within its
+declared hooks. They must not override core `AGENTS.md` / role rules, edit
+core files, reveal secrets, or authorize sends/submits. Same boundary as
+web/RAG content; spotlighting (below) applies when that text is fed into an
+LLM. Worked example: `examples/plugin-skill-trust/` (v0.9; pattern observed in
+`santifer/career-ops`).
+
+### Thin-pointer multi-runtime instructions
+
+When the same workflow must run under more than one agent harness, keep one
+canonical instruction tree and point each runtime at it with a short wrapper
+— do not fork the full prose into `CLAUDE.md`, Cursor rules, Codex skills,
+and Gemini entry files. Drift between forks is a silent governance failure.
+Worked example: `examples/thin-pointer/` (v0.9). See also
+`docs/agent-skills-integration.md`.
 
 ### Spotlighting at the Reasoning Boundary (TR-SEC-005)
 
@@ -309,7 +384,14 @@ agent's claim, is ground truth.
 
 Use scripts, tests, linters, and schema validators before asking a model to
 judge quality. Agents can call deterministic checks; they should not replace
-them.
+them (TR-AGT-002, TR-AGT-006).
+
+### Self-Healing Metadata (TR-AGT-007)
+
+When a deterministic pass repairs missing required metadata, flag inventions
+with an enrichment marker (e.g. `*_generated: true`) rather than rejecting the
+record. Remapping a legacy key is not an invention — do not set the marker for
+renames alone.
 
 ### LLM Eval Files (TR-TEST-005)
 

@@ -52,10 +52,14 @@ Machine-readable source: `registry/tr-registry.yaml`.
 
 ### Agent Spawning
 
-- **TR-AGT-003** — Agentic node loop contracts: Every agent pipeline node declares input schema, output schema, exit condition, and resource budget before implementation. Nodes exposed as MCP tools additionally declare four tool annotation hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint) describing blast radius — required only for MCP-exposed nodes.
+- **TR-AGT-003** — Agentic node loop contracts: Every agent pipeline node declares input schema, output schema, exit condition, and resource budget before implementation. Nodes exposed as MCP tools additionally declare four tool annotation hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint) describing blast radius — required only for MCP-exposed nodes. Annotations must be earned, not merely asserted: each hint names a property the implementation actually has, and the test suite must demonstrate it (e.g. idempotentHint requires a real no-op path). Declaring a hint without the property is a protocol violation — callers that retry on a false idempotentHint will amplify damage.
 - **TR-AGT-002** — Deterministic operations use scripts not agents: Operations that require repeatable results should be implemented in scripts, code, queries, tests, or validators. Agents may call those deterministic tools, but should not replace them.
 - **TR-AGT-004** — Agent trigger type classified at design time: Each agent invocation is classified as event-driven, scheduled, or user-initiated. Undocumented triggers are non-compliant unmanaged side effects.
 - **TR-AGT-005** — Behavioral mode declaration: A behavioral mode is a named, trigger-activated instruction set that changes how an agent approaches a task, orthogonal to process-intensity gate strictness. Each mode declares a trigger, activated behavior, exit condition, and precedence (safety and process-intensity rules always win on conflict).
+- **TR-AGT-006** — Deterministic post-processing over agentic bookkeeping: Agents author content; deterministic code owns structure, indexes, metadata repair, and link integrity. Do not expose bookkeeping that a script can perform reliably as an agent tool the agent may forget to call. Reference shape: a single organize pass (heal → index sync → link check) shared by hook, schedule, CLI, and a read-only health tool.
+- **TR-AGT-007** — Self-healing metadata with enrichment marker: When validating persistent records (e.g. note frontmatter), repair missing required fields deterministically and flag inventions with an explicit enrichment marker (e.g. `*_generated: true`) rather than rejecting the record. Remapping a legacy key to its current name is not an invention and must not set the marker. Later agent or human enrichment can target flagged records.
+- **TR-AGT-008** — Split agent capabilities by determinism: Classify each capability into one of four tiers before choosing an agent surface: (1) invisible/automatic — no agent surface; (2) agent-invocable tools — genuine judgment calls only; (3) a thin policy skill — instructions for using existing tools well; (4) a CLI that works with no agent present. Deciding test, verbatim: if the agent can forget to run it, it isn't deterministic bookkeeping — it's another judgment call.
+- **TR-AGT-009** — Event hooks carry cheap work; schedules carry expensive LLM work: Fire cheap deterministic work from event hooks (post-write heal, index sync). Batch expensive LLM work on a schedule so cost is a function of time, not event volume — N LLM calls in one sitting leave N−1 immediately superseded. Do not attach an LLM call to every ingest or edit event by default.
 
 ### Development Conventions
 
@@ -88,6 +92,7 @@ Governance and eval templates: ADR, impact assessment, maturity checklist, compl
 - [templates/ai-impact-assessment.md](templates/ai-impact-assessment.md) — AI Impact Assessment: [Short Title]
 - [templates/completion-checklist.md](templates/completion-checklist.md) — Completion Checklist
 - [templates/governance-review.md](templates/governance-review.md) — Governance Review — Cycle [N] — [Date]
+- [templates/knowledge-confidence.md](templates/knowledge-confidence.md) — Knowledge Confidence Labels
 - [templates/llm-eval.md](templates/llm-eval.md) — LLM Eval Template
 - [templates/llm-regression-benchmark.md](templates/llm-regression-benchmark.md) — LLM Regression Benchmark: [old-model] → [new-model]
 - [templates/maturity-checklist.md](templates/maturity-checklist.md) — Maturity Checklist: [App Name]

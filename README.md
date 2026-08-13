@@ -64,8 +64,13 @@ A step-by-step path for pulling these standards into your own repo, not just thi
    [`examples/agent-permission-guard/`](examples/agent-permission-guard/),
    [`examples/spotlighting/`](examples/spotlighting/),
    [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/),
-   [`examples/strict-output-schema/`](examples/strict-output-schema/), and
-   [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/) show
+   [`examples/strict-output-schema/`](examples/strict-output-schema/),
+   [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/),
+   [`examples/thin-pointer/`](examples/thin-pointer/),
+   [`examples/plugin-skill-trust/`](examples/plugin-skill-trust/),
+   [`examples/honest-ci-limits/`](examples/honest-ci-limits/),
+   [`examples/ssrf-allowlist/`](examples/ssrf-allowlist/), and
+   [`examples/local-only-model-registry/`](examples/local-only-model-registry/) show
    a requirement moving end-to-end: TR-ID → ADR → maturity row → script → CI gate.
 6. **Reconcile with tools you already use** — [`docs/agent-skills-integration.md`](docs/agent-skills-integration.md)
    covers how this layers under AGENTS.md, agent-skills, and Cursor rules rather
@@ -107,6 +112,26 @@ tool-registry misconfiguration that a per-agent data-layer role alone still
 blocks — and the ground-truth-vs-self-report trace (TR-TEST-007): an agent's
 own claim about its tool access shown giving a false pass that only the tool
 registry's actual state catches.
+
+See [`examples/thin-pointer/`](examples/thin-pointer/) for multi-runtime
+instruction SoT: one canonical checklist with short AGENTS and Cursor-rule
+wrappers that point at it instead of forking the prose.
+
+See [`examples/plugin-skill-trust/`](examples/plugin-skill-trust/) for
+third-party skill output treated as untrusted under TR-SEC-005: a planted
+overriding community skill caught by a fail-closed quarantine/merge boundary.
+
+See [`examples/honest-ci-limits/`](examples/honest-ci-limits/) for stating
+workflow/permission/gitignore guards as *friction*, not barriers — the honest
+limit that pairs with TR-SEC-009/010.
+
+See [`examples/ssrf-allowlist/`](examples/ssrf-allowlist/) for outbound fetch
+hygiene: host allowlist, fail-closed addresses, DNS pin, and redirect-hop
+re-validation (true IP/socket pinning named as residual).
+
+See [`examples/local-only-model-registry/`](examples/local-only-model-registry/)
+for TR-SEC-003 enforcement that fails loud on an unregistered model rather
+than assuming a cloud route is safe by omission.
 
 ## Public Evidence Map
 

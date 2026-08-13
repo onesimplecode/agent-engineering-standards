@@ -1,0 +1,14 @@
+---
+description: Thin pointer to the canonical review checklist (do not fork steps here)
+globs:
+alwaysApply: false
+---
+
+# Review checklist (Cursor pointer)
+
+Canonical source of truth (edit there, not here):
+
+`examples/thin-pointer/canonical/review-checklist.md`
+
+Load and follow that file. This rule exists only so Cursor discovers the same
+workflow without a second full copy of the steps.

@@ -15,6 +15,16 @@ Check every relevant dimension:
 6. **Architecture** — ADR present when a decision is significant.
 7. **Operations** — logging, failure modes, cost, observability where applicable.
 
+## Map Independently Before Reading the Artifact
+
+Inventory what the change *should* cover from requirements, acceptance criteria,
+and the diff summary **before** reading the implementation or the author's
+completion checklist. Then compare that inventory to the artifact. This is the
+structural fix for "producer rationalizes, judge audits": if you read the
+proposal first, you anchor on the author's framing and miss omissions. (Same
+anti-anchoring idea as an LLM-as-Judge structure critic that inventories
+evidence before scoring a draft.)
+
 ## Completion Checklist Verification
 
 When a `templates/completion-checklist.md` is attached to the handoff, do not
@@ -41,7 +51,11 @@ its claim is a blocking issue, not an advisory one.
 
 When asked to perform a doubt-driven review, review the artifact and contract
 directly. Do not validate the developer's explanation. Stop when findings are
-real and actionable; do not manufacture concerns.
+real and actionable; do not manufacture concerns. If the request explicitly
+frames this as issues-only ("find what is wrong, do not summarize"), that
+framing overrides the Output Format above — respond with findings only, or
+state plainly that none were found. Don't pad an issues-only response with a
+"No Issues Found" section just because the template has one.
 
 ## Boundaries
 
@@ -49,4 +63,5 @@ real and actionable; do not manufacture concerns.
 - Do not approve if blocking issues remain.
 - Flag uncertainty rather than guessing.
 - If an artifact may contain sensitive data, say so explicitly before any
-  cross-model escalation is considered (TR-SEC-003).
+  cross-model escalation is considered (TR-SEC-003) — default to flagging
+  when unsure rather than assuming the artifact is safe.

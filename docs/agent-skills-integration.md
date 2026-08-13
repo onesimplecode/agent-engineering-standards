@@ -52,3 +52,22 @@ Per `CONTRIBUTING.md`, this repo does not accept task playbooks or skill
 collections — contribute those to a skills repository. What belongs here is
 the constraint layer: registry entries, templates, deterministic checks, and
 adapters that export them into other tools' formats.
+
+## Multi-runtime thin pointers (ROADMAP v0.9)
+
+When integrating with more than one coding-agent harness, prefer **one
+canonical instruction tree** and short per-runtime pointers over forked
+copies of the same skill/mode prose. Skills remain the task layer; this
+repo's registry and generated manifests (`cursor-rules-adapter.py`,
+`llms.txt`) remain the constraint layer.
+
+Minimal worked example: `examples/thin-pointer/` — one canonical checklist
+plus short `AGENTS` and Cursor-rule wrappers that point at it. Comparative
+exemplars (not shipped): `santifer/career-ops`, `MadsLorentzen/ai-job-search`.
+
+**Plugin / skill trust:** third-party skill markdown is untrusted data
+(TR-SEC-005). See `examples/plugin-skill-trust/` and `AGENTS.md`.
+
+**Deferred (ROADMAP Backlog — unscheduled):** system vs user path data
+contract — wait for a private consumer that needs safe auto-update of agent
+tooling before shipping a synthetic updater example.

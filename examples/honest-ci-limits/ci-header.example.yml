@@ -1,0 +1,33 @@
+# Example only — not executed by this repository's CI.
+# Copy the comment discipline into real workflows; keep actions SHA-pinned (TR-SEC-009).
+#
+# HONEST LIMIT: This workflow is friction, not a barrier.
+# A pull request can edit this file (permissions, pinned SHAs, skip conditions).
+# CI catches accidents and casual drift; branch protection, required checks, and
+# human review of workflow diffs remain the real backstop.
+#
+# What this example CI will NOT do:
+# - Live scrapes or ToS-sensitive third-party fetches
+# - Publish releases or push tags (contents: read only)
+# - Treat a green check as proof against a determined author who widens the guard
+
+name: honest-ci-limits-example
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Least privilege for this job — still editable in the same PR (friction).
+permissions:
+  contents: read
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      # Pin third-party actions to full commit SHAs (TR-SEC-009). Updating the
+      # pin is a deliberate, reviewable diff — not a floating tag.
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Placeholder check
+        run: echo "Replace with a real drift guard; keep the honest-limit header."

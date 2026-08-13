@@ -59,6 +59,20 @@ listener over a firewalled one; short-lived tokens over rotated static keys;
 a type that has no PII methods over a runtime check). A friction-class
 mitigation is acceptable only when its backstop is named.
 
+## Read-boundary vs. topic-avoidance
+
+Do not confuse two different meanings of "ignore":
+
+| Intent | What it is | Threat-model role |
+|---|---|---|
+| **Read boundary** | The agent *cannot* read a path or corpus (ACL, mount scope, tool deny) | Security control — reduces blast radius under prompt injection (TR-SEC-010 / least agency) |
+| **Topic avoidance** | The agent *should not write about* a theme (style guide, editorial deny-list) | Content policy — not a security boundary; a prompt-injected session can still see the material if it is readable |
+
+An ignore file or deny-list that only steers writing is **not** a substitute for
+removing read access. Cite this distinction when a design proposes "ignore X"
+as a mitigation — say which meaning is intended. (Observation: many knowledge
+systems discuss ignore lists; this template does not require shipping one.)
+
 ## Unmitigated Residuals
 
 Anything above with Status ≠ done: tag `LUMIA-DEBT: <description> [TR-ID]` in

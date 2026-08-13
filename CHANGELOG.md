@@ -5,6 +5,93 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-08-13
+
+### Added
+
+- `TR-AGT-006` — Deterministic post-processing over agentic bookkeeping
+- `TR-AGT-007` — Self-healing metadata with enrichment marker
+- `TR-AGT-008` — Split agent capabilities by determinism (four-tier + deciding test)
+- `TR-AGT-009` — Event hooks carry cheap work; schedules carry expensive LLM work
+- `templates/knowledge-confidence.md` — five-label claim vocabulary; contested
+  claims never resolved by recency alone
+- `AGENTS.md` — capability-split, hooks-vs-schedules, earned MCP annotations,
+  self-healing metadata sections; also "Honest CI Limits", "Outbound Fetch
+  Hygiene"; plugin-skill and thin-pointer sections cite worked examples
+- `agents/reviewer.md` — "Map independently before reading the artifact"
+  (anti-anchoring)
+- `docs/ai-engineering-operating-model.md` — OKF cite; permission boundaries
+  do not fix data quality
+- `templates/threat-model.md` — read-boundary vs topic-avoidance distinction
+- `templates/adr.md` — deferred decisions must name meantime degradation
+- `ATTRIBUTIONS.md` — `langchain-ai/openwiki` (MIT), `garrytan/gbrain`,
+  plus v0.9 comparative cites for `santifer/career-ops`,
+  `MadsLorentzen/ai-job-search` (thin-pointer / honest CI), and
+  `koala73/worldmonitor` (SSRF allowlist pattern)
+- `examples/plugin-skill-trust/` — planted overriding community skill +
+  `skill_boundary.py` (quarantine helpers, fail-closed merge). Completes
+  the TR-SEC-005 plugin-skill trust ROADMAP v0.9 item (AGENTS.md prose
+  already existed).
+- `examples/thin-pointer/` — minimal multi-runtime SoT: canonical
+  review checklist + short AGENTS and Cursor-rule wrappers. Completes
+  the thin-pointer ROADMAP v0.9 item (docs-first; dual-runtime dogfood
+  not required for this minimal export).
+- `tests/test_plugin_skill_trust_example.py`,
+  `tests/test_thin_pointer_example.py`
+- `examples/honest-ci-limits/` — docs-first fixtures for stating CI
+  security/permission/gitignore guards as *friction*, not barriers
+  (`ci-header.example.yml`, `gitignore.example`, README). Comparative
+  only vs community CI-honesty patterns (`MadsLorentzen/ai-job-search`);
+  pairs with existing TR-SEC-009/010 prose. ROADMAP v0.9 item.
+- `examples/ssrf-allowlist/` — MIT stdlib worked example
+  (`safe_fetch.py`): host allowlist, fail-closed address checks, DNS
+  pin, redirect-hop re-validation; true IP/socket pinning omitted and
+  named as residual. No new TR-ID (TR-SEC-005 open-world fetch hygiene).
+  ROADMAP v0.9 item (private ADR-017).
+- `tests/test_honest_ci_limits_example.py`,
+  `tests/test_ssrf_allowlist_example.py` — structural + mocked-network
+  unit coverage for the two examples
+- `docs/requirements-implementation-map.md` — rows for honest CI, SSRF
+  fetch hygiene, thin-pointer, and plugin-skill trust; rows for
+  TR-AGT-006..009 and knowledge-confidence
+- `docs/agent-skills-integration.md` — thin-pointer example path; notes
+  path-contract moved to ROADMAP Backlog (unscheduled)
+- `examples/local-only-model-registry/` — reference implementation
+  (`registry.py`) and worked-example writeup concretizing TR-SEC-003 ("PII
+  routed to local LLM only"): a config-driven `MODEL_REGISTRY` declaring
+  provider family per model, and `validate_local_only()`, which fails loud
+  on a model absent from the registry rather than assuming it's safe.
+  Extracted from a private-repo fix (private ADR-036) that closed a real
+  gap of the same shape TR-SEC-003 already covers: a prior local-only
+  enforcement control (private ADR-013 point 7) existed as tested code that
+  was never actually wired into either of its two call sites, so the
+  requirement had policy language but no verification behind it — this is
+  the second independent instance of that exact gap, which is what
+  triggered generalizing it into a portable pattern rather than leaving it
+  local to one project
+- `tests/test_local_only_model_registry_example.py` — 7-test suite: the
+  drift guard (every shipped default model is registered), the
+  disabled-by-default no-op, the registered-cloud-model-raises case, the
+  unregistered-model-raises case (the pattern's central claim — an
+  unverifiable model must fail loud, not pass by omission), and that every
+  candidate field is checked, not just the first
+- `README.md` — worked-traces list and Enforced workflow sections for the
+  five v0.9 examples above
+
+### Changed
+
+- `TR-AGT-003` — MCP annotations must be earned (demonstrated in tests), not
+  merely asserted
+- `ROADMAP.md` — system vs user path data contract moved from v0.9 to
+  Backlog (unscheduled); not a release gate
+
+### Fixed
+
+- Generalized three private app-name citations in `ROADMAP.md`,
+  `docs/ai-engineering-operating-model.md`, and
+  `templates/knowledge-confidence.md` to `private-repo` / `private app`
+  wording so the mandatory private leak scan passes before publish
+
 ## [0.8.1] - 2026-08-03
 
 ### Changed
@@ -319,7 +406,8 @@ cases) — both fixed prior to this release.
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.6.0...v0.7.0

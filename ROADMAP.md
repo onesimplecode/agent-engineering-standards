@@ -205,17 +205,83 @@ Released 2026-08-03 (`v0.8.1`). Patch release — no new roadmap theme.
 - [x] `agents/reviewer.md` requires spot-checking completion-checklist
       file:line citations against the diff (blocking on unsupported claims)
 
+## v0.9 — Multi-runtime instruction SoT & agent-content trust
+
+Released 2026-08-13 (`v0.9.0`).
+
+Motivated by a 2026-08-12 private monorepo adoption ADR for portable patterns
+from `santifer/career-ops` and promoting the thin-pointer item previously left
+on the unscheduled backlog (also observed in `MadsLorentzen/ai-job-search`),
+plus two low-hanging exports from the WorldMonitor / CI-honesty evaluation
+(private ADR-017): honest CI limits and an SSRF allowlist worked example.
+Job-search domain modes are **not** in scope (ADR-004 / CONTRIBUTING).
+
+- [x] **Thin-pointer / single source of truth across agent runtimes** —
+      document and exemplify one canonical instruction tree with short CLI /
+      harness wrappers. Minimal example: `examples/thin-pointer/` +
+      `docs/agent-skills-integration.md` + AGENTS.md. Comparative vs
+      `santifer/career-ops` and `MadsLorentzen/ai-job-search`. Content ready
+      under Unreleased; ships with v0.9. (Strict dual-runtime dogfood remains
+      nice-to-have, not a gate for this minimal export.)
+- [x] **Third-party / plugin skill output is untrusted (TR-SEC-005)** —
+      AGENTS.md prose + `examples/plugin-skill-trust/` (planted overriding
+      skill + fail-closed quarantine API). Complements spotlighting (v0.7).
+      Content ready under Unreleased; ships with v0.9.
+- [x] **System vs user path data contract (worked example)** — **Moved to
+      Backlog** (unscheduled). Not a v0.9 gate; left here so release
+      readers see the disposition. See Backlog for the open item.
+- [x] **Honest CI limits as a portable pattern** — document that
+      workflow/permission/gitignore guards are *friction*, not barriers;
+      ship `examples/honest-ci-limits/` (workflow header + `.gitignore`
+      negation allowlist fixtures) and AGENTS.md "Honest CI Limits".
+      Comparative only vs `MadsLorentzen/ai-job-search` CI honesty.
+      Content ready under Unreleased; ships with v0.9.
+- [x] **SSRF allowlist + redirect-hop re-check worked example** — MIT
+      stdlib reimplementation in `examples/ssrf-allowlist/` (host
+      allowlist, fail-closed addresses, DNS pin, hop re-validation) +
+      AGENTS.md "Outbound Fetch Hygiene"; no new TR-ID; true IP/socket
+      pinning intentionally omitted and named as residual. Content ready
+      under Unreleased; ships with v0.9.
+
+All four in-scope exports shipped. Path data contract remains on Backlog.
+
 ## Backlog — unscheduled
 
-Deferred from the 2026-07-13 Zero-Trust-for-AI-Agents review, design-stage
-only as of 2026-07-13 with no running implementation cited since. Not
-attached to any version — promotion requires the same bar as v0.7/v0.8: an
-operating track record in the private monorepo (commits, tests, hands-on
-evidence), not just an accepted design ADR.
+Items below are **not** attached to a named release. Promotion requires the
+same bar as v0.7/v0.8: an operating track record in the private monorepo
+(commits, tests, hands-on evidence), not just an accepted design ADR.
+
+The first block was deferred from the 2026-07-13 Zero-Trust-for-AI-Agents
+review (design-stage only as of 2026-07-13). Later bullets cite other private
+evaluations (e.g. WorldMonitor, 2026-08-12) the same way.
 
 - [ ] **Disposition contract** — triage agents emit a structured disposition
       (query / think / report) as a loop-contract output field, extending
       TR-AGT-003 (private-repo deployment proposal)
+- [ ] **Frozen agent protocol: additive-forever versioning with live
+      conformance** — the mechanism that makes a "stable tool contract" an
+      enforceable claim rather than an aspiration. Three parts, and the third
+      is the load-bearing one: (a) every field name and its semantics frozen
+      at v1 — never removed, renamed, or re-typed; new optional params and
+      response fields may be added at any time, clients must ignore unknown
+      fields, servers must not reject unknown-to-v1 additions they ship;
+      (b) a `protocol_version` integer on every response *and every error*,
+      incremented only on a breaking change (which by policy requires a new
+      spec document, i.e. expected never); (c) the spec is **generated from
+      the live operation definitions**, and a conformance checker validates
+      live responses against that same registry — so doc and code cannot
+      structurally drift, and a third-party implementation can certify
+      against it. Conformance asserts shape, enum validity, and round-trips,
+      explicitly **not** ranking or answer quality — that belongs to an eval
+      harness, and conflating the two is what makes most "compliance" claims
+      meaningless. Extends TR-AGT-003, which today requires MCP annotations
+      to be *declared* but not to be *true* or *stable*. Observed in
+      `garrytan/gbrain` (`docs/protocol/MEMORY_VERBS_v1.md`, five frozen
+      verbs over MCP with `gbrain protocol conformance --target <endpoint>`).
+      Promote only after the private monorepo has a frozen surface with
+      passing conformance tests against a live mount — a private app's
+      organizer-layer plan is the intended first evidence. Not tied to a
+      named release.
 - [ ] **Agreement-rate-gated authority promotion** — the measurable form of
       the advisory-first trust ramp: agent verdicts run advisory while
       human-agreement rate is measured; promotion to blocking/trusted cites
@@ -234,6 +300,35 @@ evidence), not just an accepted design ADR.
       keeping the dependency (Anthropic Zero-Trust eBook). **Unproven here**
       — export only after it has been practiced at least once in the private
       monorepo
+- [x] **Honest CI limits as a portable pattern** — **Moved to v0.9**
+      (`examples/honest-ci-limits/` + AGENTS.md). Left here only so older
+      backlog readers see the disposition; do not re-implement.
+- [ ] **System vs user path data contract (worked example)** — versioned
+      allowlists of system-updatable vs user-owned paths with a
+      deterministic CI non-overlap check (inspired by career-ops
+      `DATA_CONTRACT.md`). Ship under `examples/` when a private consumer
+      needs safe auto-update of agent tooling without touching user data —
+      not inventing a synthetic updater for completeness alone. Deferred
+      from v0.9; not tied to a named release.
+- [ ] **Graded source confidence (provenance metadata)** — optional outlet-tier /
+      state-media risk metadata alongside fail-closed TR-SEC-011 trust mapping
+      (tiers inform weighting and disclosure; they must not upgrade unknown
+      sources to trusted). Observed in `koala73/worldmonitor` source-tier /
+      propaganda-risk tagging. Promote only after a private consumer stores and
+      retrieves graded confidence with a drift-guard test; not tied to a named
+      release.
+- [ ] **Hybrid keyword → ML → LLM classification with source-tagged confidence**
+      — each classification result carries which stage produced it (`keyword` /
+      `ml` / `llm`); deterministic stages run first; LLM may override only on
+      higher confidence. Reinforces “deterministic checks before agent judgment”
+      and TR-SEC-012. Observed in WorldMonitor’s threat-classification pipeline.
+      Promote only with a private running classifier that tags `source`; not
+      tied to a named release.
+- [ ] **Content-hash LLM-call dedup for cost stampede control** — cache or
+      coalesce identical prompts / headline sets so concurrent callers share one
+      LLM invocation. Related to layered policy / cost budgets; observed in
+      WorldMonitor Redis summary dedup. Export only after practiced in the
+      private monorepo with measurable cost impact; not tied to a named release.
 
 ## Non-goals
 

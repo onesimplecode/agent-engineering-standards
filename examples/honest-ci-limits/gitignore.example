@@ -1,0 +1,16 @@
+# Example .gitignore fragment — personal / local data stay out of git.
+# HONEST LIMIT: ignoring paths is friction. A PR can delete these lines or
+# widen the negation allowlist below; reviewers must treat .gitignore diffs
+# that re-include personal paths as security-relevant.
+
+# Default: keep personal and runtime state out
+data/
+logs/
+.env
+.env.*
+*.pem
+
+# Narrow negation allowlist — only reviewed, non-secret examples may be tracked.
+# Adding a new ! exception belongs in the same PR as the file it unlocks.
+!data/.gitkeep
+!config/*.example
