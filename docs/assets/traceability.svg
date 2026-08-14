@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1102 246" width="1102" height="246" role="img" aria-label="Traceability chain for requirement TR-GOV-001: the registry entry, the AGENTS.md convention, a maturity checklist row, the deterministic script that enforces it, and the CI gate that fails the build.">
+  <title>TR-GOV-001 from requirement to enforced CI gate</title>
+
+  <rect x="0" y="0" width="1102" height="246" rx="14" fill="#f6f8fa"/>
+
+  <text x="24" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#1f2933">One requirement, end to end: <tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">TR-GOV-001</tspan></text>
+
+  <!-- Stage 1 -->
+  <rect x="24" y="68" width="190" height="118" rx="10" fill="#ffffff" stroke="#d5dbe0" stroke-width="1"/>
+  <circle cx="50" cy="94" r="13" fill="#4c6ef5"/>
+  <text x="50" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">1</text>
+  <text x="40" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#1f2933">Requirement</text>
+  <text x="40" y="148" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">registry/</text>
+  <text x="40" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#556270">tr-registry.yaml</text>
+  <text x="40" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">stable ID, never renumbered</text>
+
+  <path d="M 220 127 L 234 127" stroke="#9aa5b1" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Stage 2 -->
+  <rect x="240" y="68" width="190" height="118" rx="10" fill="#ffffff" stroke="#d5dbe0" stroke-width="1"/>
+  <circle cx="266" cy="94" r="13" fill="#7048e8"/>
+  <text x="266" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">2</text>
+  <text x="256" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#1f2933">Convention</text>
+  <text x="256" y="148" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#556270">AGENTS.md</text>
+  <text x="256" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">"Single Source of Truth"</text>
+  <text x="256" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">what your agent reads</text>
+
+  <path d="M 436 127 L 450 127" stroke="#9aa5b1" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Stage 3 -->
+  <rect x="456" y="68" width="190" height="118" rx="10" fill="#ffffff" stroke="#d5dbe0" stroke-width="1"/>
+  <circle cx="482" cy="94" r="13" fill="#0ca678"/>
+  <text x="482" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">3</text>
+  <text x="472" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#1f2933">Status row</text>
+  <text x="472" y="148" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">examples/worked-example/</text>
+  <text x="472" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#556270">docs/maturity-checklist.md</text>
+  <text x="472" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">row A.10 — Met</text>
+
+  <path d="M 652 127 L 666 127" stroke="#9aa5b1" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Stage 4 -->
+  <rect x="672" y="68" width="190" height="118" rx="10" fill="#ffffff" stroke="#d5dbe0" stroke-width="1"/>
+  <circle cx="698" cy="94" r="13" fill="#f08c00"/>
+  <text x="698" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">4</text>
+  <text x="688" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#1f2933">Deterministic check</text>
+  <text x="688" y="148" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">scripts/</text>
+  <text x="688" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#556270">check-config-consistency.py</text>
+  <text x="688" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">catches the planted drift</text>
+
+  <path d="M 868 127 L 882 127" stroke="#9aa5b1" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Stage 5 -->
+  <rect x="888" y="68" width="190" height="118" rx="10" fill="#ffffff" stroke="#e03131" stroke-width="1.5"/>
+  <circle cx="914" cy="94" r="13" fill="#e03131"/>
+  <text x="914" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">5</text>
+  <text x="904" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#1f2933">CI gate</text>
+  <text x="904" y="148" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#8a95a1">.github/workflows/</text>
+  <text x="904" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#556270">config-drift-demo.yml</text>
+  <text x="904" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#c92a2a">exit 1 — build fails</text>
+
+  <text x="24" y="218" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" fill="#556270">Every stage is a real file in this repo, and every one names <tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#1f2933">TR-GOV-001</tspan>. The last one is why it is <tspan font-weight="600" fill="#1f2933">enforced</tspan>, not just documented.</text>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa5b1"/>
+    </marker>
+  </defs>
+</svg>

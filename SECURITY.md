@@ -21,7 +21,7 @@ If you believe you have found a security issue:
 
 ## Out of Scope
 
-- Vulnerabilities in private LumiaForge applications not present in this repo.
+- Vulnerabilities in the maintainer's private applications not present in this repo.
 - Theoretical attacks against example/synthetic content in `examples/worked-example/`.
 - Social engineering or prompt-injection examples without a concrete flaw in shipped templates.
 

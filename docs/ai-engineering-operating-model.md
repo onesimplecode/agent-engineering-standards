@@ -1,6 +1,6 @@
 # AI Engineering Operating Model
 
-LumiaForge treats AI-assisted development as a governed engineering system, not
+These standards treat AI-assisted development as a governed engineering system, not
 as ad hoc prompting. The operating model has four layers:
 
 1. **Requirements** — stable, named expectations in `registry/tr-registry.yaml`.
@@ -76,7 +76,7 @@ drift silently and defeat the single-source-of-truth convention.
 
 - `scripts/check-config-consistency.py` catches retired model strings and
   config/documentation drift.
-- `scripts/debt-report.py` surfaces `LUMIA-DEBT:` and `POC-EXCEPTION:` tags.
+- `scripts/debt-report.py` surfaces `TECH-DEBT:` and `POC-EXCEPTION:` tags.
 - `scripts/public-export-check.py` validates public repo hygiene before release.
 
 ## Role-Time Controls

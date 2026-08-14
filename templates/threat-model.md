@@ -75,7 +75,7 @@ systems discuss ignore lists; this template does not require shipping one.)
 
 ## Unmitigated Residuals
 
-Anything above with Status ≠ done: tag `LUMIA-DEBT: <description> [TR-ID]` in
+Anything above with Status ≠ done: tag `TECH-DEBT: <description> [TR-ID]` in
 the affected file, or note a `POC-EXCEPTION` with the tier-graduation
 condition.
 

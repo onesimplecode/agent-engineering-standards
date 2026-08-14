@@ -129,6 +129,18 @@ def test_scripts_section_lists_real_files(tmp_path: Path) -> None:
     assert "scripts/cursor-rules-adapter.py" in text
 
 
+def test_start_here_section_names_the_adoption_entry_points(tmp_path: Path) -> None:
+    """The manifest must name the file the README tells readers to copy first.
+
+    Without this, deleting _start_here_section leaves both the suite and
+    --check green while the adoption CTA silently vanishes from the manifest.
+    """
+    text = generate(tmp_path).read_text(encoding="utf-8")
+    assert "## Start Here" in text
+    assert "AGENTS.starter.md" in text
+    assert "AGENTS.md" in text
+
+
 def test_provenance_marker_present(tmp_path: Path) -> None:
     text = generate(tmp_path).read_text(encoding="utf-8")
     assert "llms-txt-generator.py" in text

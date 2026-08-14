@@ -4,8 +4,11 @@ TR-GOV-002 — Deferred-work tagging convention report.
 
 Scans the repo for inline tags:
 
-    LUMIA-DEBT: <description> (<TR-ID or rationale>)
+    TECH-DEBT: <description> (<TR-ID or rationale>)
     POC-EXCEPTION: <TR-ID> <description>
+
+`LUMIA-DEBT:` is accepted as a legacy alias for `TECH-DEBT:` and reported under
+the canonical name, so trees tagged before the rename keep scanning clean.
 
 and compiles them into a markdown report grouped by tag type and referenced
 TR-ID. Use this to populate the "Evidence/Notes" column of a per-app
@@ -37,6 +40,7 @@ EXCLUDE_DIR_NAMES = {
 # contain the tag strings as examples, not as real deferred-work markers).
 EXCLUDE_FILES = {
     "scripts/debt-report.py",
+    "tests/test_debt_report.py",
     "docs/tr-registry.yaml",
     "registry/tr-registry.yaml",
 }
@@ -47,7 +51,13 @@ SKIP_SUFFIXES = {
     ".pyc", ".lock", ".woff", ".woff2", ".ico", ".zip", ".gz",
 }
 
-TAG_PATTERN = re.compile(r"\b(LUMIA-DEBT|POC-EXCEPTION):\s*(.*)$")
+CANONICAL_TAGS = ("TECH-DEBT", "POC-EXCEPTION")
+# Pre-rename tag; still scanned, reported under its canonical name.
+LEGACY_TAG_ALIASES = {"LUMIA-DEBT": "TECH-DEBT"}
+
+TAG_PATTERN = re.compile(
+    r"\b(" + "|".join((*CANONICAL_TAGS, *LEGACY_TAG_ALIASES)) + r"):\s*(.*)$"
+)
 TR_ID_PATTERN = re.compile(r"TR-[A-Z]+-\d+")
 
 
@@ -66,7 +76,7 @@ def iter_files(root: Path):
 
 def collect(root: Path) -> dict[str, list[tuple[str, str]]]:
     """Return {tag_type: [(location, rest_of_line), ...]}."""
-    found: dict[str, list[tuple[str, str]]] = {"LUMIA-DEBT": [], "POC-EXCEPTION": []}
+    found: dict[str, list[tuple[str, str]]] = {tag: [] for tag in CANONICAL_TAGS}
     for path in iter_files(root):
         try:
             text = path.read_text(encoding="utf-8", errors="ignore")
@@ -77,6 +87,7 @@ def collect(root: Path) -> dict[str, list[tuple[str, str]]]:
             if not m:
                 continue
             tag, rest = m.group(1), m.group(2).strip()
+            tag = LEGACY_TAG_ALIASES.get(tag, tag)
             rel = path.relative_to(root)
             found[tag].append((f"{rel}:{lineno}", rest))
     return found
@@ -86,7 +97,7 @@ def render(found: dict[str, list[tuple[str, str]]]) -> str:
     total = sum(len(v) for v in found.values())
     lines = ["# Deferred Work Report (TR-GOV-002)", ""]
     if total == 0:
-        lines.append("No `LUMIA-DEBT:` or `POC-EXCEPTION:` tags found.")
+        lines.append("No `TECH-DEBT:` or `POC-EXCEPTION:` tags found.")
         return "\n".join(lines)
 
     for tag, entries in found.items():

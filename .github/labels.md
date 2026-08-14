@@ -21,10 +21,9 @@ Apply these labels in the public GitHub repository. Create them in repo Settings
 3. App-specific support requests → `wontfix-scope`, redirect to private projects.
 4. Accepted proposals → link to roadmap issue or milestone.
 
-## Seeded roadmap issues (create on first publish)
+## Seeded roadmap issues
 
-Copy titles into GitHub Issues with label `roadmap`:
-
-1. **v0.2** — Add generic secret scanning to release checks
-2. **v0.3** — Expand worked example with CI gate evidence
-3. **v0.4** — AGENTS.md / Cursor adapter generation from TR registry
+Open one issue per candidate in the "Next up" table of `ROADMAP.md`, labelled
+`roadmap`, with the candidate's evidence gate in the body so an outside reader
+can see what would unblock it. Kept as a pointer rather than a duplicated list —
+the roadmap is the single source of truth for what is next.

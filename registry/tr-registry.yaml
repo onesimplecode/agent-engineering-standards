@@ -1,4 +1,4 @@
-# LumiaForge Public Technical Requirement Registry (curated v0.2)
+# Public Technical Requirement Registry (curated v0.2)
 # Curated public registry subset. IDs are permanent — never renumbered.
 #
 # System slugs: SEC, TEST, ADR, AGT, GOV, PUB (public release)
@@ -306,7 +306,7 @@ requirements:
     status: active
     section: "Development Conventions"
     text: >
-      Tag deferred work as LUMIA-DEBT or POC-EXCEPTION. scripts/debt-report.py
+      Tag deferred work as TECH-DEBT or POC-EXCEPTION. scripts/debt-report.py
       compiles tags for maturity checklist reconciliation.
 
   - id: TR-GOV-003

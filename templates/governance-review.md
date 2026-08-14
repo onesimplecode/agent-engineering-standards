@@ -10,7 +10,7 @@ review. If this is the first review for a project, record it as Cycle 1.
 
 ## Scope
 
-Which apps and LumiaForge-level documents were reviewed this cycle?
+Which apps and org-level documents were reviewed this cycle?
 
 ## Status of Previous Cycle's Open Items
 
@@ -45,7 +45,7 @@ the last review.
 | App | Objective | Previous status | New status | Reason |
 |---|---|---|---|---|
 
-## Updates to LumiaForge-Level Governance
+## Updates to Org-Level Governance
 
 - [ ] `registry/tr-registry.yaml` changes (new/superseded TR-IDs)
 - [ ] `AGENTS.md` changes

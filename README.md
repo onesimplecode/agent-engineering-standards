@@ -1,168 +1,172 @@
-# LumiaForge AI Engineering Standards
+# Agent Engineering Standards
 
-An auditable **engineering operating model** for agent-assisted software work — not another
-prompt library or RAG platform.
+AI coding agents take the shortest path. This repo gives yours rules it reads,
+and gives your CI the deterministic checks that catch it when it takes one anyway.
 
-## Problem
+[![Release checks](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/release-check.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/release-check.yml)
+[![Permission guard demo](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/agent-permission-guard-demo.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/agent-permission-guard-demo.yml)
+[![Config drift demo](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/config-drift-demo.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/config-drift-demo.yml)
+![Tests](https://img.shields.io/badge/tests-134%20passing-brightgreen)
+![Dependencies](https://img.shields.io/badge/dependencies-none%20(stdlib)-blue)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-AI coding agents default to the shortest path: skip tests, leak context across trust boundaries,
-drift config and docs, and loop without budgets. Senior engineers prevent these failures with
-standards, reviews, and deterministic checks. This repository packages that discipline for
-public reuse.
+**7 scripts · 13 worked examples · 9 templates · 37 requirement IDs · 134 tests.**
+Every script runs on the Python 3 standard library alone — nothing to install.
+Every rule here was extracted from a failure in a running system, not invented
+for a blog post.
 
-## What this is
+**Maintained by** [David Lin](https://github.com/onesimplecode) · MIT · [v0.10.0](CHANGELOG.md)
+
+## See it catch something (30 seconds)
+
+Wildcard install/exec grants in an agent allowlist are a security boundary, not
+a convenience — a prompt-injected session can invoke anything allowlisted.
+
+```bash
+git clone https://github.com/onesimplecode/agent-engineering-standards
+cd agent-engineering-standards
+python3 scripts/agent-permission-guard.py \
+  --settings examples/agent-permission-guard/settings.example.json
+```
+
+```
+FORBIDDEN [wildcard_dangerous_verb] examples/agent-permission-guard/settings.example.json: 'Bash(pip install:*)' -- wildcard write/install/exec/network grants are never allowed
+UNREVIEWED examples/agent-permission-guard/settings.example.json: 'Bash(ruff check:*)' -- not in REVIEWED_BASELINE; add it to scripts/agent-permission-guard.py in this PR if intentional
+```
+
+Exit code 1. No install step, no config, no API key — the guard hard-codes its
+own reviewed baseline, so widening the allowlist and approving the widening land
+in the same reviewable diff. Full walkthrough:
+[`examples/agent-permission-guard/`](examples/agent-permission-guard/).
+
+Second proof, ten seconds: LLM output that fails open through
+`bool("false") is True` —
+[`examples/strict-output-schema/`](examples/strict-output-schema/).
+
+## Start here
+
+Copy [`AGENTS.starter.md`](AGENTS.starter.md) into your project root as
+`AGENTS.md`. Seven rules, one page, no vocabulary to learn — Cursor, Claude
+Code, Codex, and similar harnesses read it today. Graduate to the full
+[`AGENTS.md`](AGENTS.md) when you want requirement IDs, threat modeling,
+provenance hygiene, and multi-agent isolation.
+
+Then:
+
+1. **Prove one failure mode** — run the example above (or any from the gallery).
+   You should see CI-style exit code 1 on a planted bad grant.
+2. **Point a script at your own tree** — the five adoption scripts in
+   [Reference scripts](#reference-scripts) each take a path argument; the exact
+   flag per script is shown there.
+3. **Add what you need** — templates under [`templates/`](templates/), role
+   specs under [`agents/`](agents/).
+
+No fork required. Read the model when you want depth:
+[`docs/ai-engineering-operating-model.md`](docs/ai-engineering-operating-model.md).
+How this layers with agent-skills / Cursor rules:
+[`docs/agent-skills-integration.md`](docs/agent-skills-integration.md).
+
+## Why this exists
+
+AI coding agents default to the shortest path: skip tests, leak context across
+trust boundaries, drift config and docs, and loop without budgets. Senior
+engineers prevent those failures with standards, reviews, and deterministic
+checks. This repository packages that discipline so you can drop it into a real
+project.
+
+## Who this is for
+
+| For you if… | Not for you if… |
+|-------------|-----------------|
+| You already use AI coding agents and feel drift, over-broad tool grants, or “it worked in chat” false confidence | You want a hosted agent platform, a skill marketplace, or a RAG product |
+| You want **design-time** rules + **scriptable** checks, not more prompts | You need runtime policy engines (see Microsoft Agent Governance Toolkit for that layer) |
+| You are fine copying templates and wiring one CI job | You want a one-click framework that ships an app |
+
+## How a requirement becomes an enforced gate
+
+![TR-GOV-001 flows from the requirement registry through an AGENTS.md convention and a maturity checklist row to a deterministic script and a CI gate that exits 1](docs/assets/traceability.svg)
+
+Every stage above names `TR-GOV-001`, and every one is a file you can open. That
+chain is the differentiator: design-time traceability — requirement IDs, PII
+routing, loop contracts, trigger classification, and scriptable drift detection —
+that *complements* [AGENTS.md](https://agents.md) and
+[agent-skills](https://github.com/addyosmani/agent-skills). Walk a second
+requirement end to end in [`examples/worked-example/`](examples/worked-example/).
+
+## Example gallery
+
+Each example plants a real failure, then catches it.
+
+| Failure prevented | Example | Path |
+|---|---|---|
+| Wildcard / unreviewed agent tool grants | Permission guard | [`examples/agent-permission-guard/`](examples/agent-permission-guard/) |
+| `bool("false")` fail-open on LLM fields | Strict output schema | [`examples/strict-output-schema/`](examples/strict-output-schema/) |
+| Untrusted memory treated as instructions | Provenance trust tags | [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/) |
+| Security delimiters re-inlined and drifting | Spotlighting drift | [`examples/spotlighting/`](examples/spotlighting/) |
+| Multi-agent isolation + self-report false passes | Compartmentalized agents | [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/) |
+| Third-party skill markdown overriding core rules | Plugin skill trust | [`examples/plugin-skill-trust/`](examples/plugin-skill-trust/) |
+| Open-world fetch without redirect-hop re-checks | SSRF allowlist | [`examples/ssrf-allowlist/`](examples/ssrf-allowlist/) |
+| Unregistered model assumed safe for PII | Local-only model registry | [`examples/local-only-model-registry/`](examples/local-only-model-registry/) |
+| Forked multi-runtime instruction drift | Thin pointer | [`examples/thin-pointer/`](examples/thin-pointer/) |
+| Overclaiming workflow/gitignore “security” | Honest CI limits | [`examples/honest-ci-limits/`](examples/honest-ci-limits/) |
+| Model-string drift across config and docs | End-to-end requirement trace | [`examples/worked-example/`](examples/worked-example/) |
+| Rules that only work in one agent harness | Generated Cursor rules | [`examples/cursor-rules/`](examples/cursor-rules/) |
+| Agent loops with no declared exit condition or budget | Engine interface | [`examples/engine-interface/`](examples/engine-interface/) |
+
+## Reference scripts
+
+Point these at **your** repo:
+
+```bash
+# Config / model-string drift
+python3 scripts/check-config-consistency.py --root /path/to/your/repo --app YourApp
+
+# Deferred-work tags (TECH-DEBT / POC-EXCEPTION)
+python3 scripts/debt-report.py --path /path/to/your/repo
+
+# Agent permission grants vs reviewed baseline
+python3 scripts/agent-permission-guard.py --settings /path/to/your/settings.json
+
+# Spotlighting constants not re-inlined
+python3 scripts/spotlighting-drift-guard.py \
+  --constants-file /path/to/your/constants.py --scan-root /path/to/your/src
+
+# Export registry as Cursor project rules
+python3 scripts/cursor-rules-adapter.py --out /path/to/your/repo/.cursor/rules
+```
+
+Maintainer / staging checks for *this* repository (release hygiene, `llms.txt`
+drift): `python3 scripts/public-export-check.py .` and
+`python3 scripts/llms-txt-generator.py --check`.
+
+## What you get
 
 | Included | Not included |
 |----------|----------------|
-| Machine-readable requirement registry (`registry/tr-registry.yaml`) | Production runtime or hosted services |
-| Portable agent conventions (`AGENTS.md`, `agents/`) | Tool-specific private agent sessions |
-| Governance and eval templates (ADR, impact assessment, maturity checklist, LLM eval, completion checklist) | Full application frameworks |
-| Reference scripts (config drift, debt tags, release validation, Cursor rule export, llms.txt manifest, agent permission guard, spotlighting drift guard) | Full `agent-skills` replacement |
-| Synthetic worked example | Personal data |
+| Portable agent conventions (`AGENTS.starter.md`, `AGENTS.md`, `agents/`) | Production runtime or hosted services |
+| Machine-readable requirement registry (`registry/tr-registry.yaml`) | Full application frameworks |
+| Governance & eval templates (ADR, impact assessment, maturity, LLM eval, completion checklist) | A replacement for `agent-skills` / prompt packs |
+| Reference scripts (drift, debt tags, permission guard, spotlighting, release checks, Cursor rules, `llms.txt`) | Personal or private app data |
+| Synthetic worked examples with CI demos | |
 
-## Quick start
+## Map of the repo
 
-```bash
-# Validate a staging tree (or this repo root)
-python3 scripts/public-export-check.py .
-
-# Scan for config/model-string drift (point at your app monorepo)
-python3 scripts/check-config-consistency.py --root /path/to/your/repo --app YourApp
-
-# Report deferred-work tags
-python3 scripts/debt-report.py --path /path/to/your/repo
-
-# Export the registry as Cursor project rules (see examples/cursor-rules/)
-python3 scripts/cursor-rules-adapter.py --out /path/to/your/repo/.cursor/rules
-
-# Regenerate this repo's own llms.txt cross-tool discovery manifest
-python3 scripts/llms-txt-generator.py
-
-# Check an agent settings file's tool-permission grants against a reviewed baseline
-python3 scripts/agent-permission-guard.py --settings /path/to/your/settings.json
-
-# Check that spotlighting security-notice/delimiter constants aren't re-inlined elsewhere
-python3 scripts/spotlighting-drift-guard.py --constants-file /path/to/your/constants.py --scan-root /path/to/your/src
-```
-
-## Adopting this into your project
-
-A step-by-step path for pulling these standards into your own repo, not just this one:
-
-1. **Read the model** — [`docs/ai-engineering-operating-model.md`](docs/ai-engineering-operating-model.md)
-   explains the four layers (requirements, roles, artifacts, checks) and the
-   failure modes they guard against.
-2. **Pull in agent conventions** — copy or reference [`AGENTS.md`](AGENTS.md) and
-   the role specs in [`agents/`](agents/) into your own repo so any AI coding
-   tool reads the same rules.
-3. **Run the checks against your repo** — point the Quick start scripts above at
-   your own monorepo (`--root /path/to/your/repo`) instead of this one.
-4. **Adopt templates as needed** — the ADR, impact assessment, maturity
-   checklist, LLM eval, and completion checklist templates in
-   [`templates/`](templates/) are meant to be copied, not just read.
-5. **Study the worked traces** — [`examples/worked-example/`](examples/worked-example/),
-   [`examples/agent-permission-guard/`](examples/agent-permission-guard/),
-   [`examples/spotlighting/`](examples/spotlighting/),
-   [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/),
-   [`examples/strict-output-schema/`](examples/strict-output-schema/),
-   [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/),
-   [`examples/thin-pointer/`](examples/thin-pointer/),
-   [`examples/plugin-skill-trust/`](examples/plugin-skill-trust/),
-   [`examples/honest-ci-limits/`](examples/honest-ci-limits/),
-   [`examples/ssrf-allowlist/`](examples/ssrf-allowlist/), and
-   [`examples/local-only-model-registry/`](examples/local-only-model-registry/) show
-   a requirement moving end-to-end: TR-ID → ADR → maturity row → script → CI gate.
-6. **Reconcile with tools you already use** — [`docs/agent-skills-integration.md`](docs/agent-skills-integration.md)
-   covers how this layers under AGENTS.md, agent-skills, and Cursor rules rather
-   than replacing them.
-
-None of this requires forking the repo — steps 2–4 are copy-in, and every
-script in step 3 takes a root-path argument (`--root`, `--path`, `--out`,
-`--settings`, or a positional path, depending on the script — see each
-command's `--help`) precisely so it can target your own repo instead of this
-one.
-
-## Enforced workflow
-
-See [`examples/worked-example/`](examples/worked-example/) for a synthetic trace:
-
-**TR-AGT-004** → ADR → maturity checklist row → `LUMIA-DEBT:` tag → `check-config-consistency.py`
-
-See [`examples/agent-permission-guard/`](examples/agent-permission-guard/) for the
-security guardrail trace (TR-SEC-010): a planted wildcard grant and an
-unreviewed grant, both caught by `scripts/agent-permission-guard.py`'s
-co-located reviewed baseline — the "make dangerous changes loud, not
-impossible" pattern.
-
-See [`examples/spotlighting/`](examples/spotlighting/) for the untrusted-content
-delimiting trace (TR-SEC-005): a planted re-inlined copy of the
-security-notice/delimiter constants, caught by
-`scripts/spotlighting-drift-guard.py`'s single-source enforcement.
-
-See [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/) (TR-SEC-011)
-for the fail-closed content-trust derivation pattern — a drift-guarded mapping
-from source type to trust level — and
-[`examples/strict-output-schema/`](examples/strict-output-schema/) (TR-SEC-012) for
-a live repro of the `bool("false") is True` fail-open coercion bug and the
-reject-never-coerce fix.
-
-See [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/)
-for the two-layer multi-agent isolation trace (TR-SEC-013) — a simulated
-tool-registry misconfiguration that a per-agent data-layer role alone still
-blocks — and the ground-truth-vs-self-report trace (TR-TEST-007): an agent's
-own claim about its tool access shown giving a false pass that only the tool
-registry's actual state catches.
-
-See [`examples/thin-pointer/`](examples/thin-pointer/) for multi-runtime
-instruction SoT: one canonical checklist with short AGENTS and Cursor-rule
-wrappers that point at it instead of forking the prose.
-
-See [`examples/plugin-skill-trust/`](examples/plugin-skill-trust/) for
-third-party skill output treated as untrusted under TR-SEC-005: a planted
-overriding community skill caught by a fail-closed quarantine/merge boundary.
-
-See [`examples/honest-ci-limits/`](examples/honest-ci-limits/) for stating
-workflow/permission/gitignore guards as *friction*, not barriers — the honest
-limit that pairs with TR-SEC-009/010.
-
-See [`examples/ssrf-allowlist/`](examples/ssrf-allowlist/) for outbound fetch
-hygiene: host allowlist, fail-closed addresses, DNS pin, and redirect-hop
-re-validation (true IP/socket pinning named as residual).
-
-See [`examples/local-only-model-registry/`](examples/local-only-model-registry/)
-for TR-SEC-003 enforcement that fails loud on an unregistered model rather
-than assuming a cloud route is safe by omission.
-
-## Public Evidence Map
-
-- [`AGENTS.md`](AGENTS.md) — tool-neutral agent rules for data routing, loop contracts,
-  trigger classification, external-content trust boundaries, and deterministic checks.
-- [`agents/`](agents/) — reusable role specs for developer, reviewer, private researcher,
-  and public researcher agents.
-- [`docs/ai-engineering-operating-model.md`](docs/ai-engineering-operating-model.md) —
-  the overall model: requirements, roles, artifacts, checks.
-- [`docs/requirements-implementation-map.md`](docs/requirements-implementation-map.md) —
-  where each public requirement is implemented and how strongly it is enforced.
-- [`templates/llm-eval.md`](templates/llm-eval.md) and
-  [`templates/completion-checklist.md`](templates/completion-checklist.md) —
-  eval and self-critique patterns that make agent output reviewable.
-- [`llms.txt`](llms.txt) — generated, drift-gated cross-tool discovery manifest
-  (registry + agent roles + templates + scripts) following the emerging
-  llms.txt convention (https://llmstxt.org); regenerate with
-  `scripts/llms-txt-generator.py`. Generated at this repo's own root only —
-  unlike the Cursor adapter, there's no `examples/llms-txt/` export target,
-  since this manifest describes this repo, not a repo you'd point it at.
-
-## Positioning
-
-- **Complements** [AGENTS.md](https://agents.md), [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills), and runtime governance tools —
-  see [`docs/agent-skills-integration.md`](docs/agent-skills-integration.md) for the layer split and integration patterns.
-- **Differentiator:** design-time traceability — requirement IDs, PII routing rules, loop contracts,
-  trigger classification, and scriptable drift detection.
+- [`AGENTS.starter.md`](AGENTS.starter.md) — seven-rule starter, the fastest adoption path
+- [`AGENTS.md`](AGENTS.md) — full tool-neutral rules (data routing, loop contracts,
+  triggers, untrusted content, deterministic checks)
+- [`agents/`](agents/) — developer / reviewer / researcher role specs
+- [`docs/ai-engineering-operating-model.md`](docs/ai-engineering-operating-model.md)
+  — requirements, roles, artifacts, checks
+- [`docs/requirements-implementation-map.md`](docs/requirements-implementation-map.md)
+  — where each public requirement is enforced
+- [`templates/`](templates/) — ADR, impact assessment, maturity, eval, threat model, completion checklist
+- [`llms.txt`](llms.txt) — generated discovery manifest for this repo
+  ([llmstxt.org](https://llmstxt.org))
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Releases follow [ROADMAP.md](ROADMAP.md) and [CHANGELOG.md](CHANGELOG.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Releases follow [ROADMAP.md](ROADMAP.md)
+and [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

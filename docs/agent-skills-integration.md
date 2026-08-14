@@ -6,7 +6,7 @@ at different layers, and they compose.
 
 ## The layer split
 
-| | agent-skills | ai-engineering-standards (this repo) |
+| | agent-skills | agent-engineering-standards (this repo) |
 |---|---|---|
 | Unit | A skill: a task-level playbook ("how to do X well") | A requirement: a stable, ID'd constraint ("what must always hold") |
 | Scope | Per-task, invoked when the task matches | Cross-cutting, applies to every task |

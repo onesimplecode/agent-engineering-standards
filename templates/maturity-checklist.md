@@ -4,7 +4,7 @@
 **Current tier:** [POC | Local Production | Cloud Production]
 **Operationalizes:** TR-GOV-004 (per-app Statement of Applicability, modeled on ISO/IEC 42001 Annex A)
 
-This checklist maps LumiaForge's governance mechanisms to the 9 ISO/IEC 42001
+This checklist maps these standards' governance mechanisms to the 9 ISO/IEC 42001
 Annex A control objectives. For each objective, record whether it applies to this
 app at its current tier, its status, the evidence, and — for anything not yet
 Met — the tier at which it must be closed.
@@ -13,9 +13,9 @@ Met — the tier at which it must be closed.
 
 Update this checklist at every tier graduation and at each governance review
 (TR-GOV-006, `templates/governance-review.md`). Use `scripts/debt-report.py` to
-pull open `LUMIA-DEBT:` / `POC-EXCEPTION:` items into the Evidence column.
+pull open `TECH-DEBT:` / `POC-EXCEPTION:` items into the Evidence column.
 
-| # | Annex A Objective | LumiaForge Mechanism | Applicable | Status | Evidence | Target for closure |
+| # | Annex A Objective | Standards Mechanism | Applicable | Status | Evidence | Target for closure |
 |---|---|---|---|---|---|---|
 | A.2 | AI policies | `AGENTS.md`, `registry/tr-registry.yaml`, app README or local policy docs | | | | |
 | A.3 | Internal organization | Agent role contracts in `agents/` plus app-specific ownership notes | | | | |

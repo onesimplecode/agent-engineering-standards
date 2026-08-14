@@ -5,6 +5,86 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-08-13
+
+### Added
+
+- `AGENTS.starter.md` — seven-rule, one-page starter with no requirement-ID
+  vocabulary; now the primary adoption CTA, with the full `AGENTS.md` as the
+  graduation path (the full file is ~460 lines and consumed on every agent turn,
+  which made it a heavy first commitment)
+- `docs/assets/traceability.svg` — diagram tracing `TR-GOV-001` from its registry
+  entry through the `AGENTS.md` convention, a maturity-checklist row, the
+  deterministic script, and the CI gate that fails the build. Rendered in
+  `README.md`; every stage names the same requirement ID and is pinned by
+  `tests/test_traceability_diagram.py`
+- `tests/test_debt_report.py` — first coverage for `scripts/debt-report.py`:
+  canonical tag collection, legacy-alias normalization, exclusion of
+  convention-defining files, and the always-exit-0 reporting contract
+- `tests/test_readme_claims.py` — gates the README's factual claims: asset
+  counts, the test count in both the badge and the asset line, and 1:1
+  correspondence between gallery rows and `examples/` directories. The counts
+  were hand-written in two places with nothing stopping them drifting
+- `llms.txt` — "Start Here" section naming `AGENTS.starter.md` and `AGENTS.md`,
+  so the discovery manifest includes the primary adoption path
+  (`scripts/llms-txt-generator.py`, pinned by a generator test)
+
+### Changed
+
+- `README.md` — announcement-oriented first screen: one-line positioning, CI /
+  test / dependency badges, an asset count line, runnable proof (real guard
+  output, verbatim) above the fold, then the starter CTA. Example gallery
+  reordered failure-first and extended to cover all shipped examples. Negative
+  positioning now confined to the "Who this is for" and "What you get" tables;
+  dropped from the subtitle.
+- `ROADMAP.md` — inverted for readers: "Next up" candidates with their evidence
+  gates first, shipped releases compressed to a table pointing at `CHANGELOG.md`,
+  backlog condensed into collapsed sections. Private decision-record references
+  replaced by a single statement of the promotion bar.
+- De-branded public prose: the private monorepo name no longer appears anywhere
+  outside historical changelog entries and the deliberate `LUMIA-DEBT` legacy
+  alias — `LICENSE`, `AGENTS.md`, `ATTRIBUTIONS.md`, `CONTRIBUTING.md`,
+  `SECURITY.md`, `docs/`, `templates/`, `registry/`, generated `llms.txt`, and
+  generated Cursor rules. Attribution now names David Lin directly.
+- **Deferred-work tag renamed `LUMIA-DEBT:` → `TECH-DEBT:`** (TR-GOV-002),
+  pairing with the already-generic `POC-EXCEPTION:`. `scripts/debt-report.py`
+  still scans `LUMIA-DEBT:` as a legacy alias and reports it under the canonical
+  name, so a tree tagged before the rename produces a complete report with no
+  migration step.
+- **Renamed to "Agent Engineering Standards" / `agent-engineering-standards`**
+  (from "AI Engineering Standards" / `ai-engineering-standards`) — "agent" names
+  the audience where "AI" named nothing. Applied to the README title and badge,
+  clone and comparison URLs, `docs/releasing.md`,
+  `docs/agent-skills-integration.md`, `CONTRIBUTING.md`, `ATTRIBUTIONS.md`,
+  generated `llms.txt`, and generated Cursor rule descriptions. GitHub issues a
+  permanent redirect for the old path, so existing clones, stars, forks, issues,
+  and the v0.1.0–v0.9.0 releases and tags all follow the rename; no CI change was
+  needed, since no workflow references the repository name.
+- `docs/releasing.md` — new "Announcement prep" section absorbing the
+  issue-seeding step formerly parked at the end of `ROADMAP.md`, plus badge-URL
+  verification, the repository About description, and a verified topic list.
+  Also corrects the `ROADMAP.md` release step, which still said to tick `[x]`
+  checkboxes the restructured roadmap no longer has.
+- `.github/labels.md` — seeded-issue list replaced by a pointer to `ROADMAP.md`
+  "Next up"; the hardcoded list still named v0.2–v0.4 items shipped in July
+- `CONTRIBUTING.md` — domain-specific agent modes named as out of scope, so
+  `ROADMAP.md`'s cross-reference to that boundary is now true
+- `scripts/debt-report.py` — `tests/test_debt_report.py` added to
+  `EXCLUDE_FILES`; its fixtures were surfacing as false findings in this repo's
+  own deferred-work report
+
+### Fixed
+
+- `scripts/check-config-consistency.py` pointed readers at `docs/tr-registry.yaml`
+  on failure — a path that does not exist in this repo (it is
+  `registry/tr-registry.yaml`). `examples/worked-example/README.md` reproduced
+  the wrong path as "real output".
+- `examples/worked-example/README.md` showed a duplicated scan location the
+  script no longer emits, with a paragraph explaining a glob-dedup quirk that no
+  longer occurs. Both "real output" blocks in the repo are now pinned by
+  `tests/test_readme_claims.py`, which runs each command and requires a fenced
+  block to match byte for byte.
+
 ## [0.9.0] - 2026-08-13
 
 ### Added
@@ -406,14 +486,15 @@ cases) — both fixed prior to this release.
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.9.0...HEAD
-[0.9.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.1...v0.9.0
-[0.8.1]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.8.0...v0.8.1
-[0.8.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.7.0...v0.8.0
-[0.7.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.6.0...v0.7.0
-[0.6.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/onesimplecode/ai-engineering-standards/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/onesimplecode/ai-engineering-standards/releases/tag/v0.1.0
+[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.8.1...v0.9.0
+[0.8.1]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/onesimplecode/agent-engineering-standards/releases/tag/v0.1.0

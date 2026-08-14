@@ -165,7 +165,7 @@ def main() -> int:
         print(f"OK — checked {len(apps)} app(s), no retired strings or config drift found.")
         return 0
 
-    print("\nSee TR-GOV-001 (docs/tr-registry.yaml) for the convention this enforces.")
+    print("\nSee TR-GOV-001 (registry/tr-registry.yaml) for the convention this enforces.")
     return 1
 
 

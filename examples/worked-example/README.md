@@ -1,6 +1,6 @@
 # Worked Example: TR-AGT-004 End-to-End (Synthetic)
 
-This directory shows how one requirement flows through LumiaForge governance
+This directory shows how one requirement flows through the governance
 artifacts. **All content is fictional** — no private data or real application code.
 
 ## Trace
@@ -31,16 +31,10 @@ uses `gemma4:26b`. Real output from the command above:
 sample-app:
   DRIFT    local-gemma-model: 2 distinct values found
              'gemma4:31b' <- sample-app/CLAUDE.md:8
-             'gemma4:26b' <- sample-app/config/search_config.yaml.example:5, sample-app/config/search_config.yaml.example:5
+             'gemma4:26b' <- sample-app/config/search_config.yaml.example:5
 
-See TR-GOV-001 (docs/tr-registry.yaml) for the convention this enforces.
+See TR-GOV-001 (registry/tr-registry.yaml) for the convention this enforces.
 ```
-
-(the duplicated location on the last line is a cosmetic quirk in the script itself:
-`SCAN_GLOBS` includes both `config/*.yaml.example` and `config/*.example`, and
-`search_config.yaml.example` matches both patterns with no dedup, so the file is scanned
-twice. Harmless — it doesn't cause a false positive or negative — but worth knowing if
-you copy this script into your own repo.)
 
 (exit code 1). `.github/workflows/config-drift-demo.yml` runs this exact command in CI
 on every change to this example or the script — the job's *success* condition is that

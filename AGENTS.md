@@ -1,8 +1,8 @@
 # AGENTS.md — Public Agent Conventions
 
-These conventions are the portable, tool-neutral layer of the LumiaForge AI
-Engineering Standards. They can be read by Claude Code, Cursor, Codex, Gemini
-CLI, or any agent that accepts repository instructions.
+These conventions are the portable, tool-neutral layer of the AI Engineering
+Standards. They can be read by Claude Code, Cursor, Codex, Gemini CLI, or any
+agent that accepts repository instructions.
 
 The goal is not to make agents more verbose. The goal is to make agent-assisted
 software work bounded, reviewable, and auditable.
@@ -431,8 +431,10 @@ python3 scripts/check-config-consistency.py
 
 Use structured tags for intentional gaps:
 
-- `LUMIA-DEBT: <description> [TR-ID]`
+- `TECH-DEBT: <description> [TR-ID]`
 - `POC-EXCEPTION: <description> [TR-ID]`
+
+(`LUMIA-DEBT:` is accepted as a legacy alias and reported as `TECH-DEBT`.)
 
 Then run:
 

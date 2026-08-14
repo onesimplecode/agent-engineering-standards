@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for interest in LumiaForge AI Engineering Standards. This repository is a
+Thank you for interest in Agent Engineering Standards. This repository is a
 **standards toolkit** — templates, requirement registry, and reference scripts for
 building auditable agent-assisted software workflows. It is not a supported product.
 
@@ -17,6 +17,8 @@ Out of scope:
 - Support for maintainer-private applications not published in this repository.
 - Generic "make AI better" requests without a concrete standards gap.
 - Requests to add full application frameworks or duplicate `agent-skills` / `AGENTS.md`.
+- Domain-specific agent modes (e.g. job-search or other single-vertical
+  workflows). Patterns must generalize across projects to belong here.
 
 ## Before You Open an Issue
 

@@ -1,6 +1,6 @@
 # Maintainer Release Guide
 
-This document describes the steps for cutting a new release of `ai-engineering-standards`.
+This document describes the steps for cutting a new release of `agent-engineering-standards`.
 Releases are periodic and curated — see `ROADMAP.md` for scope of each version.
 
 ## Release triggers
@@ -60,13 +60,16 @@ Add a dated `[X.Y.Z]` section at the top of the changelog with Added / Changed /
 Removed subsections. Update the comparison URLs at the bottom:
 
 ```
-[Unreleased]: https://github.com/onesimplecode/ai-engineering-standards/compare/vX.Y.Z...HEAD
-[X.Y.Z]: https://github.com/onesimplecode/ai-engineering-standards/compare/vA.B.C...vX.Y.Z
+[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/vX.Y.Z...HEAD
+[X.Y.Z]: https://github.com/onesimplecode/agent-engineering-standards/compare/vA.B.C...vX.Y.Z
 ```
 
 ### 4. Update `ROADMAP.md`
 
-Mark all completed items for this version with `[x]`.
+Move shipped candidates out of "Next up" into the "Recently shipped" table with
+their version and date, re-rank the remaining candidates, and promote any backlog
+item that now has running evidence behind it. Shipped detail belongs in
+`CHANGELOG.md`, not here.
 
 ### 5. Review `ATTRIBUTIONS.md`
 
@@ -94,6 +97,38 @@ Follows SemVer-lite (`MAJOR.MINOR.PATCH`):
 | PATCH | Corrections to existing content, wording fixes |
 | MINOR | New templates, registry entries, scripts, or examples |
 | MAJOR | Breaking changes to template format or TR registry schema |
+
+## Announcement prep (one-time)
+
+The repository has been public since v0.1.0; these are the discovery and
+presentation steps that a release alone does not cover, done once ahead of a
+public announcement.
+
+- Create issues from `.github/labels.md` with label `roadmap`, seeded from the
+  "Next up" section of `ROADMAP.md`.
+- Confirm the badge URLs at the top of `README.md` resolve against the published
+  repository path (`onesimplecode/agent-engineering-standards`).
+- Set the repository **About** description — it is what appears in GitHub search
+  results and on the profile, and most visitors read it before the README:
+
+  > This repo gives your AI coding agent rules it reads and your CI the checks
+  > that fail the build when it takes a shortcut anyway — skipped tests, widened
+  > permissions, fail-open model output.
+
+- Set repository **topics** (GitHub's actual discovery surface for this
+  category). Verified populations as of 2026-08-13:
+
+  | Topic | Why |
+  |---|---|
+  | `agentsmd` | 46 repos — the live `AGENTS.md` topic; closest peer set |
+  | `agents-md-template` | 21 repos — peers are Groundwork, neckbeard, fable-md; fits because this repo ships a copy-paste `AGENTS.starter.md` |
+  | `ai-agents`, `claude-code`, `cursor`, `ai-coding-assistant` | Audience/harness discovery |
+  | `llm-security`, `prompt-injection`, `ai-governance`, `ci-cd` | Failure-domain discovery |
+
+- Consider submitting to the curated `awesome-agents.md` list, findable under the
+  [`agentsmd` topic](https://github.com/topics/agentsmd) — a curated-list entry is
+  the highest-leverage inbound link in this niche. Confirm the list's own
+  submission rules before opening a PR.
 
 ## Post-release
 

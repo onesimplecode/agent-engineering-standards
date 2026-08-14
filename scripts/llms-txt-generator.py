@@ -137,15 +137,34 @@ def _scripts_section() -> list[str]:
     return lines
 
 
+def _start_here_section() -> list[str]:
+    """The two adoption entry points, named explicitly.
+
+    Without this, the manifest lists the registry, roles, templates, and scripts
+    but not the file a reader is actually told to copy first — an agent reading
+    llms.txt to find out how to adopt these standards would miss the CTA.
+    """
+    lines = ["## Start Here", "", "Adoption entry points, shortest path first.", ""]
+    for name, blurb in (
+        ("AGENTS.starter.md", "Seven-rule starter; copy to your project root as AGENTS.md."),
+        ("AGENTS.md", "Full tool-neutral conventions; the graduation path from the starter."),
+    ):
+        if (REPO_ROOT / name).is_file():
+            lines.append(f"- [{name}]({name}) — {blurb}")
+    lines.append("")
+    return lines
+
+
 def generate(registry_path: Path, adapter) -> str:
     lines = [
-        "# LumiaForge AI Engineering Standards",
+        "# Agent Engineering Standards",
         "",
         SUMMARY,
         "",
         PROVENANCE,
         "",
     ]
+    lines += _start_here_section()
     lines += _registry_section(registry_path, adapter)
     lines += _dir_section(
         "Agent Roles", AGENTS_DIR,

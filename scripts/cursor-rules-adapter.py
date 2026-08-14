@@ -209,7 +209,7 @@ def render_section(section: str, reqs: list[dict[str, str]]) -> str:
     always = "true" if section in ALWAYS_APPLY_SECTIONS else "false"
     parts = [
         "---",
-        f'description: "LumiaForge AI engineering standards — {section} ({ids})"',
+        f'description: "Agent engineering standards — {section} ({ids})"',
         f"alwaysApply: {always}",
         "---",
         "",

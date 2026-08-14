@@ -1,6 +1,6 @@
 # Requirements Implementation Map
 
-This map shows how the public LumiaForge standards turn requirements into
+This map shows how these public standards turn requirements into
 concrete artifacts. It is intentionally limited to public, reusable evidence.
 
 | Requirement area | Public implementation | Enforcement level | Evidence |

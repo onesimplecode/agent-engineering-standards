@@ -1,5 +1,5 @@
 ---
-description: "LumiaForge AI engineering standards — Development Conventions (TR-GOV-001, TR-GOV-002, TR-GOV-003)"
+description: "Agent engineering standards — Development Conventions (TR-GOV-001, TR-GOV-002, TR-GOV-003)"
 alwaysApply: false
 ---
 
@@ -13,7 +13,7 @@ scripts/check-config-consistency.py detects retired model strings and drift with
 
 ## TR-GOV-002 — Deferred-work tagging convention
 
-Tag deferred work as LUMIA-DEBT or POC-EXCEPTION. scripts/debt-report.py compiles tags for maturity checklist reconciliation.
+Tag deferred work as TECH-DEBT or POC-EXCEPTION. scripts/debt-report.py compiles tags for maturity checklist reconciliation.
 
 ## TR-GOV-003 — Process intensity mode declared per work session
 
