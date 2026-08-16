@@ -62,6 +62,14 @@ file.
   bounded at exactly two), manual first and automated per task only after
   stabilization.
 
+  **Progress (2026-08-15):** LumiaForge's Hermes `pr-reviewer` is a verified
+  producer-independent reviewer using GPT-5.6 Terra after a coding-model PR,
+  with deterministic CI gates, credential isolation, and a successful real-PR
+  review. This is evidence for the reviewer half of the pattern, not completion:
+  the roadmap item remains open until a distinct coding-agent path is established,
+  model changes are human-gated, the exactly-two/different-model invariant is
+  machine-checked, and reviewer agreement is measured before authority promotion.
+
 </details>
 
 <details>
