@@ -133,6 +133,18 @@ requirements:
       external input path) gets the narrowest grant at both layers; the most
       broadly-privileged agent gets no external egress at all.
 
+  - id: TR-SEC-014
+    title: Credential-isolated broker operations are scope-bound and single-use
+    status: active
+    section: "Agent Security"
+    text: >
+      An untrusted or air-gapped agent must not receive credentials for an external system.
+      A host-side broker may expose only named operations; each request must validate the exact
+      resource scope and immutable event identity, bind mutation leases to that identity,
+      revalidate immediately before mutation, and consume each lease exactly once. Broker
+      transport mounts must survive broker restarts without granting the agent write access to
+      the socket directory.
+
   - id: TR-TEST-001
     title: TDD required for core logic
     status: active

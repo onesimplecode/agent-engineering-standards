@@ -1,5 +1,5 @@
 ---
-description: "Agent engineering standards — Agent Security (TR-SEC-010, TR-SEC-013)"
+description: "Agent engineering standards — Agent Security (TR-SEC-010, TR-SEC-013, TR-SEC-014)"
 alwaysApply: true
 ---
 
@@ -14,3 +14,7 @@ Permission allowlists for coding agents (e.g. tool-grant or command-allowlist co
 ## TR-SEC-013 — Two-layer isolation for multi-agent tool and data access
 
 When multiple agents share one backing service (a tool surface and the data behind it), isolation must be enforced at two independent layers, not one. Layer one is the tool-registry/authorization scope — distinct credentials per agent, with the server deciding which tools each credential may even invoke; this bounds what is *offered* to a given agent's own reasoning. Layer two is the data-layer scope — per-agent database roles or equivalent, bounding what is *reachable* regardless of what the authorization layer believes it has granted. Neither layer is a substitute for the other: a bug in the tool-registry layer (a stray wildcard registration, a misrouted credential map) can hand an agent a tool it should never have received, and the data-layer role is what still blocks the resulting call; a data layer alone, with no tool-registry scope, would still let a compromised or over-broad tool call reach every table a shared credential can see. Extends TR-SEC-010's least-agency principle from single-agent tool grants to multi-agent tool *and* data boundaries. The most-exposed agent (the one with an external input path) gets the narrowest grant at both layers; the most broadly-privileged agent gets no external egress at all.
+
+## TR-SEC-014 — Credential-isolated broker operations are scope-bound and single-use
+
+An untrusted or air-gapped agent must not receive credentials for an external system. A host-side broker may expose only named operations; each request must validate the exact resource scope and immutable event identity, bind mutation leases to that identity, revalidate immediately before mutation, and consume each lease exactly once. Broker transport mounts must survive broker restarts without granting the agent write access to the socket directory.

@@ -17,6 +17,9 @@ unscheduled by default; a concrete use case is a legitimate reason to reprioriti
 
 ## Next up
 
+The v0.11.0 release includes the credential-isolated broker pattern, promoted from a running
+Hermes reviewer integration with real CI, lease, and restart-failure evidence.
+
 Candidates for the next release, in priority order. Each names the evidence gate
 it is still waiting on.
 

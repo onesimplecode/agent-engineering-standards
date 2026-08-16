@@ -6,11 +6,11 @@ and gives your CI the deterministic checks that catch it when it takes one anywa
 [![Release checks](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/release-check.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/release-check.yml)
 [![Permission guard demo](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/agent-permission-guard-demo.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/agent-permission-guard-demo.yml)
 [![Config drift demo](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/config-drift-demo.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/config-drift-demo.yml)
-![Tests](https://img.shields.io/badge/tests-134%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-136%20passing-brightgreen)
 ![Dependencies](https://img.shields.io/badge/dependencies-none%20(stdlib)-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-**7 scripts · 13 worked examples · 9 templates · 37 requirement IDs · 134 tests.**
+**7 scripts · 14 worked examples · 9 templates · 38 requirement IDs · 136 tests.**
 Every script runs on the Python 3 standard library alone — nothing to install.
 Every rule here was extracted from a failure in a running system, not invented
 for a blog post.
@@ -104,6 +104,7 @@ Each example plants a real failure, then catches it.
 | Untrusted memory treated as instructions | Provenance trust tags | [`examples/provenance-trust-tags/`](examples/provenance-trust-tags/) |
 | Security delimiters re-inlined and drifting | Spotlighting drift | [`examples/spotlighting/`](examples/spotlighting/) |
 | Multi-agent isolation + self-report false passes | Compartmentalized agents | [`examples/compartmentalized-agents/`](examples/compartmentalized-agents/) |
+| Credential theft, stale-event mutation, or replayed broker lease | Credential-isolated broker | [`examples/credential-isolated-broker/`](examples/credential-isolated-broker/) |
 | Third-party skill markdown overriding core rules | Plugin skill trust | [`examples/plugin-skill-trust/`](examples/plugin-skill-trust/) |
 | Open-world fetch without redirect-hop re-checks | SSRF allowlist | [`examples/ssrf-allowlist/`](examples/ssrf-allowlist/) |
 | Unregistered model assumed safe for PII | Local-only model registry | [`examples/local-only-model-registry/`](examples/local-only-model-registry/) |

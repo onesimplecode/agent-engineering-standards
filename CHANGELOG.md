@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Credential-isolated broker pattern (TR-SEC-014)** — host-side named operations keep external
+  credentials out of air-gapped agents; immutable event binding, immediate pre-mutation
+  revalidation, single-use leases, and restart-safe read-only socket transport are required.
+  Promoted from the verified Hermes PR reviewer integration.
+
 ## [0.10.0] - 2026-08-13
 
 ### Added
