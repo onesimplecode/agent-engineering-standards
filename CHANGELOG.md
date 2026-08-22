@@ -5,12 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-08-21
+
 ### Added
 
 - **Credential-isolated broker pattern (TR-SEC-014)** — host-side named operations keep external
   credentials out of air-gapped agents; immutable event binding, immediate pre-mutation
   revalidation, single-use leases, and restart-safe read-only socket transport are required.
   Promoted from the verified Hermes PR reviewer integration.
+- `AGENTS.md` — "Credential-Isolated Broker Operations" section documenting the pattern's four
+  enforced invariants (exact resource scope, immutable event identity, single-use mutation
+  leases, immediate pre-mutation revalidation) and the restart-safe socket-directory-mount
+  requirement. Every prior `TR-SEC-*` export shipped a matching `AGENTS.md` section; this closes
+  that gap for TR-SEC-014, flagged during release-readiness review.
+
+### Fixed
+
+- `docs/requirements-implementation-map.md` — the TR-SEC-014 row's Evidence column was missing
+  `AGENTS.md`, inconsistent with every other TR-SEC row's citation of both the pattern doc and
+  its registry/example backing.
 
 ## [0.10.0] - 2026-08-13
 
@@ -493,7 +506,8 @@ cases) — both fixed prior to this release.
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.8.0...v0.8.1

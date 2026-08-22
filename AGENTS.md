@@ -359,6 +359,50 @@ for a new agent split, re-verify its *reasoning* still holds before carrying
 its conclusions forward — a control copied without re-checking why it existed
 can turn into process weight that closes no actual gap.
 
+### Credential-Isolated Broker Operations (TR-SEC-014)
+
+An untrusted or air-gapped agent must never hold credentials for an external
+system. Give it a host-side broker instead: the broker holds the credential,
+the agent only requests named operations over a private transport, and no
+response path hands the credential itself back to the agent.
+
+The broker enforces, in order:
+
+1. **Exact resource scope.** Every request names the resource it targets; the
+   broker rejects anything outside the one resource (or resource set) it was
+   configured to serve. There is no wildcard scope.
+2. **Immutable event identity.** Each request carries the identity of the
+   event that triggered it (a PR number, a commit SHA) and the revision it
+   was computed against. A request with no event identity, or one that
+   doesn't match what the broker already bound to a lease, is rejected —
+   this is what stops a stale or replayed trigger from re-authorizing a
+   mutation.
+3. **Single-use mutation leases.** A lease is issued for one resource/event/
+   revision triple and consumed exactly once; a second consume attempt with
+   the same lease token fails closed, even if every other field still
+   matches.
+4. **Immediate pre-mutation revalidation.** The lease is checked against the
+   *current* revision at consume time, not only at issue time — an event
+   that was valid when the lease was issued but has since gone stale (the PR
+   moved, the branch force-pushed) must fail at the point of mutation, not
+   silently proceed on outdated authority.
+
+Transport matters as much as the validation logic: if the broker is reached
+over a Unix socket, mount the socket's *containing directory* read-only into
+the agent's sandbox, not just the socket file. Mounting only the file can
+leave a long-lived sandbox holding a handle to a deleted inode after the
+broker restarts, which either breaks silently or — worse — reconnects to
+whatever now occupies that path. A restart-safe transport re-creates the
+socket in the same mounted directory rather than assuming the mount survives
+a process restart.
+
+This pattern is the credential-isolation half of TR-SEC-010's least-agency
+principle taken to its limit: the agent isn't granted a narrowed credential,
+it is granted no credential at all, and every operation it can trigger is
+named, scoped, and lease-gated by something it does not control. See
+`examples/credential-isolated-broker/` for a reference implementation and its
+scope/lease/staleness tests.
+
 ### Ground-Truth Verification for Agent Security Claims (TR-TEST-007)
 
 An agent's own self-report is not verification evidence for a

@@ -17,9 +17,6 @@ unscheduled by default; a concrete use case is a legitimate reason to reprioriti
 
 ## Next up
 
-The v0.11.0 release includes the credential-isolated broker pattern, promoted from a running
-Hermes reviewer integration with real CI, lease, and restart-failure evidence.
-
 Candidates for the next release, in priority order. Each names the evidence gate
 it is still waiting on.
 
@@ -33,6 +30,7 @@ it is still waiting on.
 
 | Version | Date | Theme |
 |---|---|---|
+| [v0.11.0](CHANGELOG.md#0110---2026-08-21) | 2026-08-21 | Credential-isolated broker pattern (TR-SEC-014), promoted from a running Hermes reviewer integration with real CI, lease, and restart-failure evidence |
 | [v0.10.0](CHANGELOG.md#0100---2026-08-13) | 2026-08-13 | Announcement-ready README and roadmap, `AGENTS.starter.md`, rename to Agent Engineering Standards, `TECH-DEBT` tag, drift-guard tests for the README's own factual claims |
 | [v0.9.0](CHANGELOG.md#090---2026-08-13) | 2026-08-13 | Multi-runtime instruction source-of-truth, plugin-skill trust, honest CI limits, SSRF allowlist |
 | [v0.8.1](CHANGELOG.md#081---2026-08-03) | 2026-08-03 | Reviewer spot-checks completion-checklist citations against the diff |
