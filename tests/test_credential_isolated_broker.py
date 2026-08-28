@@ -30,3 +30,22 @@ def test_stale_revision_and_wrong_scope_fail_closed() -> None:
         broker.consume_mutation(
             lease, resource="repo/pr-10", event_id="event-1", revision="sha-a", current_revision="sha-b"
         )
+
+
+def test_failed_validation_does_not_burn_the_lease() -> None:
+    """A stale/mismatched attempt must not consume a lease a legitimate retry still needs.
+
+    Regression: consume_mutation used to pop the lease before validating, so one bad
+    or racy attempt (e.g. a stale current_revision) permanently destroyed an
+    otherwise-valid lease, turning a validation failure into a denial-of-service on
+    the legitimate caller's own retry.
+    """
+    broker = Broker("repo/pr-10")
+    lease = broker.issue_lease("repo/pr-10", "event-1", "sha-a")
+    with pytest.raises(BrokerError, match="stale"):
+        broker.consume_mutation(
+            lease, resource="repo/pr-10", event_id="event-1", revision="sha-a", current_revision="sha-b"
+        )
+    assert broker.consume_mutation(
+        lease, resource="repo/pr-10", event_id="event-1", revision="sha-a", current_revision="sha-a"
+    ) == "mutation-authorized"

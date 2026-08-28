@@ -1,5 +1,5 @@
 ---
-description: "Agent engineering standards — Agent Spawning (TR-AGT-003, TR-AGT-002, TR-AGT-004, TR-AGT-005, TR-AGT-006, TR-AGT-007, TR-AGT-008, TR-AGT-009)"
+description: "Agent engineering standards — Agent Spawning (TR-AGT-003, TR-AGT-002, TR-AGT-004, TR-AGT-005, TR-AGT-006, TR-AGT-007, TR-AGT-008, TR-AGT-009, TR-AGT-010, TR-AGT-011)"
 alwaysApply: false
 ---
 
@@ -9,7 +9,7 @@ alwaysApply: false
 
 ## TR-AGT-003 — Agentic node loop contracts
 
-Every agent pipeline node declares input schema, output schema, exit condition, and resource budget before implementation. Nodes exposed as MCP tools additionally declare four tool annotation hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint) describing blast radius — required only for MCP-exposed nodes. Annotations must be earned, not merely asserted: each hint names a property the implementation actually has, and the test suite must demonstrate it (e.g. idempotentHint requires a real no-op path). Declaring a hint without the property is a protocol violation — callers that retry on a false idempotentHint will amplify damage.
+Every agent pipeline node declares input schema, output schema, exit condition, and resource budget before implementation. Nodes exposed as MCP tools additionally declare four tool annotation hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint) describing blast radius — required only for MCP-exposed nodes. Annotations must be earned, not merely asserted: each hint names a property the implementation actually has, and the test suite must demonstrate it (e.g. idempotentHint requires a real no-op path). Declaring a hint without the property is a protocol violation — callers that retry on a false idempotentHint will amplify damage. A triage or gate node's output schema may additionally include a disposition field drawn from a closed vocabulary (e.g. query / think / report) naming what happens to its output next, derived from the node's own verdict — never set independently of it, so the two cannot disagree. Optional: only nodes whose output routes to more than one next step need to declare it.
 
 ## TR-AGT-002 — Deterministic operations use scripts not agents
 
@@ -38,3 +38,11 @@ Classify each capability into one of four tiers before choosing an agent surface
 ## TR-AGT-009 — Event hooks carry cheap work; schedules carry expensive LLM work
 
 Fire cheap deterministic work from event hooks (post-write heal, index sync). Batch expensive LLM work on a schedule so cost is a function of time, not event volume — N LLM calls in one sitting leave N−1 immediately superseded. Do not attach an LLM call to every ingest or edit event by default.
+
+## TR-AGT-010 — Tool contracts are frozen, versioned, and generated from live code
+
+A tool surface an agent depends on (an MCP tool set, an internal API a pipeline calls) declares field names and semantics as additive-forever once shipped: existing fields are never removed, renamed, or re-typed, and new fields are always optional. Every structured response — success and error alike — carries a protocol_version that starts at 1 and increments only on a breaking change. The documentation describing the surface (a table of operations, their annotations, their status) is generated from the same live definitions the code registers, not maintained by hand as a separate artifact; a test compares the generated form against what is committed and fails on drift, and a second check compares the declared contract against what the registration code actually sets, so a hand-maintained doc and a hand-maintained declaration cannot silently diverge from each other or from the code. An error response missing protocol_version, or a documented annotation the registration code does not actually set, is a defect, not a documentation gap.
+
+## TR-AGT-011 — Hybrid deterministic-then-agentic classification tags its own stage
+
+When a classification or triage pipeline runs multiple stages of increasing cost and judgment — a deterministic keyword/rule stage, an optional trained-model stage, an LLM stage — each result carries which stage produced it, from a closed vocabulary declared once and imported everywhere results are constructed. Deterministic stages run first and may short-circuit a later, more expensive stage entirely. A pipeline that has not yet built every stage the vocabulary names must say so rather than fabricate a stage's output to complete the shape — the tag records what actually ran, not what the architecture eventually intends. Reinforces TR-AGT-002 (deterministic checks before agent judgment) and TR-SEC-012 (reject, never coerce, a model's output) at the level of pipeline architecture rather than a single field. A later stage overriding an earlier one on higher confidence is a natural extension of this pattern but is not itself required here — export that as its own practice once a real override path exists to evidence it, rather than asserting it as already covered by this ID.

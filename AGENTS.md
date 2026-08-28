@@ -72,6 +72,57 @@ property the implementation actually has; the test suite must demonstrate it
 without the property is a protocol violation — callers that retry on a false
 `idempotentHint` amplify damage.
 
+### Disposition Field (TR-AGT-003, field 6)
+
+A triage or gate node whose output routes to more than one next step may add a
+fifth output-schema field: `disposition`, drawn from a small closed vocabulary
+naming what happens to the result next — for example `query` (needs more
+input before a judgment is safe), `think` (ready for LLM reasoning), `report`
+(terminal; nothing further examines this result). Optional — a node with only
+one possible next step (most loop contracts) doesn't need it.
+
+**Derive it from the node's own verdict; never set it independently.** If the
+node already produces a PASS/FAIL/FLAG-style verdict, disposition is a pure
+function of that verdict, computed in one place and reused everywhere the node
+constructs a result — never assigned ad hoc at each return site, which is how
+a verdict and its disposition drift apart. A default disposition for an
+unrecognized verdict should fail toward the *safer* direction for that
+specific node, not a generic "reject everything" default — the safer
+direction is whichever a false negative already costs less. A gate whose own
+design already fails open on ambiguous evidence (to avoid discarding a
+legitimate result on a coin flip) inherits that same bias into disposition: a
+`report`-style terminal default is wrong there even though it looks the more
+conservative choice in isolation, because "conservative" for that gate means
+"don't discard," not "don't proceed." Name this explicitly wherever the two
+policies could point in different directions, rather than leaving a future
+caller to inherit the mismatch silently.
+
+### Frozen, Generated Tool Contracts (TR-AGT-010)
+
+A tool surface an agent depends on — an MCP tool set, an internal API a
+multi-stage pipeline calls — is a contract, not an implementation detail.
+Three rules keep it enforceable instead of aspirational:
+
+1. **Additive-forever.** Field names and semantics, once shipped, are never
+   removed, renamed, or re-typed. New fields are always optional.
+2. **`protocol_version` on every response, success or error.** An error path
+   that returns without it is a defect — a caller that branches on protocol
+   version has no signal on the path most likely to need one.
+3. **The spec is generated from live definitions, not maintained by hand.**
+   A table of operations/annotations/status derived from the same source the
+   registration code reads means the doc and the code cannot structurally
+   drift apart. Two checks, not one: the generated doc against what's
+   committed, and the declared contract against what the registration code
+   actually sets — a hand-written declaration can drift from the code
+   exactly as easily as a hand-written doc can drift from either.
+
+Skipping rule 3 and hand-maintaining the doc instead is not free: a doc that
+merely *claims* to mirror the code accumulates drift the moment either
+changes without the other, silently, until something downstream — a caller
+trusting a stale annotation — breaks on it. A generated table plus a
+CI-enforced comparison is what makes "structurally cannot drift" true rather
+than asserted.
+
 ### Split Capabilities by Determinism (TR-AGT-008)
 
 Before adding an agent tool or skill, classify the capability:
@@ -310,6 +361,36 @@ a tool call or override system-level instructions. See
 `examples/provenance-trust-tags/` for a reference implementation of the
 fail-closed mapping and its drift guard.
 
+### Graded Outlet Confidence (TR-SEC-015)
+
+Alongside the fail-closed trust tier above, a system may attach an optional,
+more finely graded confidence about the specific outlet a piece of untrusted
+content came from — a curated reference source reads differently from an
+unrecognized domain, even though both are the same trust tier. Two rules
+keep this from quietly becoming a second, informal trust system:
+
+1. **It never upgrades the trust tier.** Grading answers "how much do we
+   weight this outlet," a different question from "did this content
+   originate outside the trust boundary." A highly graded outlet's content
+   is still delimited and spotlighted exactly like an ungraded one — trust
+   tier and outlet grade must never share a code path where one can promote
+   the other.
+2. **The grading source is a small, curated allowlist; absence is the
+   fail-closed default.** Anyone can register a domain, so a raw hostname
+   match against an open registry (e.g. grading a whole code-hosting
+   platform by domain) grades content no differently than the platform's
+   most and least reputable users — worth naming explicitly as an accepted
+   limitation rather than an unnoticed gap, even where the worst case is
+   bounded by rule 1.
+
+A parseable-input assumption is easy to get wrong here: URL/host parsing
+libraries can raise on malformed input, not just return an empty result, and
+this logic sits on a hot path (every retrieval, not just ingest) reading data
+that was never validated as a well-formed URL at write time. A single
+malformed field taking down every subsequent read of it is a bigger incident
+than the feature the fail-closed default was protecting against — wrap the
+parse, don't assume the failure mode is "returns nothing."
+
 ### Strict LLM Output-Schema Validation (TR-SEC-012)
 
 Every model-returned field gets a type check **and** a range/shape check.
@@ -430,6 +511,40 @@ Use scripts, tests, linters, and schema validators before asking a model to
 judge quality. Agents can call deterministic checks; they should not replace
 them (TR-AGT-002, TR-AGT-006).
 
+Independent validation at scale:
+[alibaba/open-code-review](https://github.com/alibaba/open-code-review/blob/b64a6200cc07ddcd41f1a4c319d5adae60579b78/README.md)
+reports significantly higher precision and F1 than a general-purpose coding agent
+reviewing the same diffs, at roughly 1/9 the token cost (lower recall is named as
+an explicit, deliberate trade-off, not hidden), backed by
+[AACR-Bench](https://huggingface.co/datasets/Alibaba-Aone/aacr-bench/tree/47be1d6df1e7faf222cf531587772d92f79fe6b2) — 50 repos,
+200 real PRs, 1,505 engineer-validated ground-truth issues — and attributes the
+precision/cost gap to file selection and rule matching running in engineering
+code before any LLM call — the same split this section requires.
+
+### Hybrid Deterministic-Then-Agentic Classification (TR-AGT-011)
+
+Applying the split above to a classification or triage pipeline specifically:
+run stages in increasing order of cost and judgment — a deterministic
+keyword/rule stage first, an optional trained-model stage next, an LLM stage
+last — and let an earlier stage short-circuit before a later one runs.
+
+**Tag each result with which stage produced it**, from one closed vocabulary
+declared once and imported everywhere a result is constructed — not
+re-declared per stage, which is how one stage's tag silently drifts from
+another's spelling of the same value. Let a deterministic stage's result
+short-circuit the pipeline before a costlier stage runs at all — that's the
+save this ordering exists for. A later stage *overriding* an earlier one on
+higher confidence is a natural next step, not this section's requirement:
+it needs its own override path and its own evidence before it's a practice
+rather than an intention — don't claim it just because the stage order and
+the tag exist.
+
+**Say what you haven't built.** If the architecture names three stages and
+only two exist, the vocabulary still declares all three — a future
+implementer needs the closed shape — but nothing fabricates the missing
+stage's output to look complete. A tag records what actually produced this
+particular result, not what the pipeline eventually intends to have.
+
 ### Self-Healing Metadata (TR-AGT-007)
 
 When a deterministic pass repairs missing required metadata, flag inventions
@@ -445,6 +560,23 @@ Agent modules that make LLM calls should have a co-located eval file at
 Evals must be gated behind `LLM_EVAL=true` so they do not run in the normal unit
 test suite. Prefer structural scoring. Use LLM-as-Judge only when structural
 scoring cannot measure the behavior.
+
+### Public Claims Require a Pinned Benchmark
+
+A README, release note, or announcement that states a quantitative or
+comparative claim about an AI tool's behavior — precision, recall, cost
+reduction, "fewer false positives" — must cite a versioned, reproducible
+benchmark, not assert the number. TR-TEST-004 and TR-TEST-005 already require
+the underlying benchmark artifact to exist; this closes the gap of public
+prose citing it. `tests/test_readme_claims.py` is this repo's own reference
+implementation — it fails the build if asset counts, test counts, or gallery
+claims drift from what's actually shipped. The same discipline applied
+specifically to a tool's *performance* claims (not just structural counts) is
+unproven here — the pattern generalizes from
+[alibaba/open-code-review](https://github.com/alibaba/open-code-review/blob/b64a6200cc07ddcd41f1a4c319d5adae60579b78/README.md)'s
+[AACR-Bench](https://huggingface.co/datasets/Alibaba-Aone/aacr-bench/tree/47be1d6df1e7faf222cf531587772d92f79fe6b2) (50 repos,
+200 real PRs, 80+ engineer-validated), which backs every precision/token-cost
+claim in its README with a named, versioned dataset rather than an assertion.
 
 ### Provider-Specific Prompt Variants
 

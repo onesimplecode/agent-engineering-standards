@@ -5,6 +5,57 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-08-28
+
+### Added
+
+- **Frozen, generated tool contracts (TR-AGT-010)** — additive-forever field semantics,
+  `protocol_version` on every response *and error*, and a spec generated from live operation
+  definitions rather than hand-maintained, checked two ways: the generated doc against what's
+  committed, and the declared contract against what the registration code actually sets. Promoted
+  from a running private-monorepo MCP tool surface with a passing drift-guard test covering both
+  checks.
+- `AGENTS.md` — "Disposition Field (TR-AGT-003, field 6)" — an optional sixth loop-contract field
+  for a triage/gate node whose output routes to more than one next step, derived from the node's
+  own verdict rather than set independently, plus a named caution about a fail-closed default
+  landing on the wrong side of a gate that itself fails open on ambiguous evidence.
+- **Hybrid deterministic-then-agentic classification (TR-AGT-011)** — a multi-stage classification
+  pipeline (deterministic → optional trained-model → LLM) tags each result with which stage
+  produced it, from one closed vocabulary; a later stage may override an earlier one only on
+  higher confidence, and an unbuilt stage is declared, not fabricated. Reinforces TR-AGT-002 and
+  TR-SEC-012 at the level of pipeline architecture. Promoted from a running private-monorepo
+  classification pipeline.
+- **Graded outlet confidence (TR-SEC-015)** — an optional, more finely graded confidence about a
+  specific untrusted outlet, alongside TR-SEC-011's fail-closed trust tier — never upgrading trust,
+  graded from a small curated allowlist with fail-closed absence. Includes a named caution about
+  parsing untrusted host/URL data on a hot path without assuming the failure mode is "returns
+  nothing" rather than raises. Promoted from a running private-monorepo retrieval pipeline with a
+  passing drift-guard test.
+- `AGENTS.md` — "Public Claims Require a Pinned Benchmark" section, generalizing
+  `tests/test_readme_claims.py`'s drift-guard pattern (previously scoped to this
+  repo's own asset/test counts) and TR-TEST-004/TR-TEST-005 into a named
+  convention: quantitative or comparative claims about an AI tool's behavior
+  must cite a versioned benchmark, not assert a number. Cites
+  alibaba/open-code-review's AACR-Bench as external corroboration.
+
+### Changed
+
+- `AGENTS.md` — "Deterministic Checks Before Agent Judgment" (TR-AGT-002,
+  TR-AGT-006) now cites alibaba/open-code-review as independent, at-scale
+  validation of the same deterministic-scoping-before-agent-judgment split.
+- `registry/tr-registry.yaml` — TR-AGT-003's text extended with the disposition-field
+  description (field 6); no ID renumbering, three new IDs added (TR-AGT-010, TR-AGT-011,
+  TR-SEC-015). Registry now 41 requirement IDs (was 38).
+
+### Fixed
+
+- **Credential-isolated broker example (`examples/credential-isolated-broker/broker.py`)** —
+  `consume_mutation` popped the lease before validating the request, so a failed validation (e.g.
+  a stale `current_revision`) permanently destroyed an otherwise-valid lease — a validation
+  failure could deny the legitimate caller's own retry. Now validates first and only consumes the
+  lease on a successful match. Found by code review, fixed with a regression test
+  (`test_failed_validation_does_not_burn_the_lease`).
+
 ## [0.11.0] - 2026-08-21
 
 ### Added
@@ -506,7 +557,8 @@ cases) — both fixed prior to this release.
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.8.1...v0.9.0

@@ -27,12 +27,15 @@ class Broker:
 
     def consume_mutation(self, token: str, *, resource: str, event_id: str,
                          revision: str, current_revision: str) -> str:
-        lease = self._leases.pop(token, None)
+        # Peek, don't pop: a failed validation below must leave the lease intact for
+        # a legitimate retry. Only a successful match actually consumes it (single-use).
+        lease = self._leases.get(token)
         if lease is None:
             raise BrokerError("invalid or consumed lease")
         self._validate(resource, event_id, revision)
         if lease != Lease(resource, event_id, revision) or current_revision != revision:
             raise BrokerError("stale or mismatched event identity")
+        del self._leases[token]
         return "mutation-authorized"
 
     def _validate(self, resource: str, event_id: str, revision: str) -> None:

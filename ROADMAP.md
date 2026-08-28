@@ -23,13 +23,13 @@ it is still waiting on.
 | Candidate | What it adds | Waiting on |
 |---|---|---|
 | **System vs. user path data contract** | Versioned allowlists of system-updatable vs. user-owned paths, with a deterministic CI non-overlap check — safe auto-update of agent tooling that cannot touch user data | A private consumer that needs it; deferred from v0.9 rather than inventing a synthetic updater |
-| **Frozen agent protocol** | Makes "stable tool contract" enforceable instead of aspirational: additive-forever field semantics, a `protocol_version` on every response *and error*, and a spec **generated from live operation definitions** so docs and code cannot structurally drift | A frozen surface in the private monorepo with conformance tests passing against a live mount |
 | **Agreement-rate-gated authority promotion** | The measurable form of an advisory-first trust ramp: agent verdicts run advisory while human-agreement rate is measured; promotion to blocking cites the rate rule by rule, never the whole queue at once | An operating track record of measured agreement rates |
 
 ## Recently shipped
 
 | Version | Date | Theme |
 |---|---|---|
+| [v0.12.0](CHANGELOG.md#0120---2026-08-28) | 2026-08-28 | Frozen, generated tool contracts (TR-AGT-010); disposition loop-contract field (TR-AGT-003 field 6); hybrid deterministic-then-agentic classification stage tagging (TR-AGT-011); graded outlet confidence (TR-SEC-015) — all four promoted from running private-monorepo consumers with passing drift-guard tests |
 | [v0.11.0](CHANGELOG.md#0110---2026-08-21) | 2026-08-21 | Credential-isolated broker pattern (TR-SEC-014), promoted from a running Hermes reviewer integration with real CI, lease, and restart-failure evidence |
 | [v0.10.0](CHANGELOG.md#0100---2026-08-13) | 2026-08-13 | Announcement-ready README and roadmap, `AGENTS.starter.md`, rename to Agent Engineering Standards, `TECH-DEBT` tag, drift-guard tests for the README's own factual claims |
 | [v0.9.0](CHANGELOG.md#090---2026-08-13) | 2026-08-13 | Multi-runtime instruction source-of-truth, plugin-skill trust, honest CI limits, SSRF allowlist |
@@ -48,8 +48,6 @@ file.
 <details>
 <summary><strong>Agent operations and trust ramps</strong></summary>
 
-- **Disposition contract** — triage agents emit a structured disposition
-  (query / think / report) as a loop-contract output field, extending TR-AGT-003.
 - **Agent-ops metric floor** — dwell time (anomaly → human awareness), coverage
   (fraction of agent outputs a human reviewed), and explainability-by-trigger-ID
   (every agent output cites the ID of its triggering event, as a mandatory
@@ -68,20 +66,32 @@ file.
   model changes are human-gated, the exactly-two/different-model invariant is
   machine-checked, and reviewer agreement is measured before authority promotion.
 
+- **Explicit precision/recall stance for AI review agents** — a reviewer's docs
+  or config must state, as a declared setting, which side of the
+  precision/recall tradeoff it optimizes for, so downstream consumers don't
+  infer a stance from behavior. New TR-ID and registry entry; needs a private
+  consumer practicing it first — a candidate PR-review agent in the private
+  monorepo currently has no such disclosure and no eval harness to measure it
+  against — before export, per this file's evidence bar.
+
 </details>
 
 <details>
 <summary><strong>Provenance and classification</strong></summary>
 
-- **Graded source confidence** — optional outlet-tier / state-media risk metadata
-  alongside the fail-closed TR-SEC-011 trust mapping. Tiers inform weighting and
-  disclosure; they must never upgrade an unknown source to trusted. Needs a
-  private consumer that stores and retrieves graded confidence with a drift-guard
-  test.
-- **Hybrid keyword → ML → LLM classification with source-tagged confidence** —
-  each result carries which stage produced it (`keyword` / `ml` / `llm`);
-  deterministic stages run first; the LLM may override only on higher confidence.
-  Reinforces "deterministic checks before agent judgment" and TR-SEC-012.
+- **State-media / outlet-risk tier** — a distinct risk dimension beyond the
+  reputability grading TR-SEC-015 shipped in v0.12.0 (see `CHANGELOG.md`);
+  needs a private consumer with an actual use case for classifying
+  state-affiliated or risk-flagged outlets, not just reputability. TR-SEC-015's
+  own curated-allowlist approach is the likely shape, but this dimension has
+  no consumer or use case in the private monorepo yet.
+- **Confidence-gated stage override** — in a hybrid deterministic-then-agentic
+  classification pipeline (TR-AGT-011, shipped in v0.12.0), a later, costlier
+  stage overriding an earlier deterministic stage's result on higher
+  confidence — rather than only short-circuiting past it, which is as far as
+  TR-AGT-011 goes. Needs a private consumer with a real override path (and a
+  reason a deterministic stage's result should ever be overturned) before
+  export, not just the stage-tagging discipline already shipped.
 
 </details>
 

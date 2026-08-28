@@ -1,5 +1,5 @@
 ---
-description: "Agent engineering standards — Prompt Injection (TR-SEC-005, TR-SEC-011, TR-SEC-012)"
+description: "Agent engineering standards — Prompt Injection (TR-SEC-005, TR-SEC-011, TR-SEC-012, TR-SEC-015)"
 alwaysApply: true
 ---
 
@@ -18,3 +18,7 @@ Content ingested into an agentic memory or RAG index must be tagged with its sou
 ## TR-SEC-012 — Strict LLM output-schema validation — reject, never coerce
 
 Every field returned by a model call must pass both a type check and a range/shape check before use. A field that fails either check must be rejected, never silently coerced to a compatible type. Coercion can fail open: Python's bool("false") evaluates to True because any non-empty string is truthy, so a bare bool() cast on a model-returned string can flip a relevance or safety gate the wrong way. A missing optional field is a defined, valid state; a present field of the wrong type is not, and the two must not share a fallback path. Pairs with TR-GOV-001's single-source-of-truth convention — a strict parser for a given output schema is defined once and used by every caller of that boundary.
+
+## TR-SEC-015 — Graded outlet confidence never upgrades a TR-SEC-011 trust tier
+
+Alongside the fail-closed trust tier TR-SEC-011 requires, a system may attach an optional, more finely graded confidence about the specific outlet a piece of untrusted content came from (e.g. a curated reference source vs. an unrecognized domain). This tier is informational only: it must never promote content to a more trusted tier, and it must never change how retrieved content is presented at the reasoning boundary — a highly graded outlet's content is still delimited and spotlighted exactly like an ungraded one. The grading source is a small, curated, reviewable allowlist; absence from it is the fail-closed default, never inferred as trustworthy. Downstream weighting or disclosure may read the grade; no trust or spotlighting decision may.
