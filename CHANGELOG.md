@@ -21,10 +21,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   landing on the wrong side of a gate that itself fails open on ambiguous evidence.
 - **Hybrid deterministic-then-agentic classification (TR-AGT-011)** — a multi-stage classification
   pipeline (deterministic → optional trained-model → LLM) tags each result with which stage
-  produced it, from one closed vocabulary; a later stage may override an earlier one only on
-  higher confidence, and an unbuilt stage is declared, not fabricated. Reinforces TR-AGT-002 and
-  TR-SEC-012 at the level of pipeline architecture. Promoted from a running private-monorepo
-  classification pipeline.
+  produced it, from one closed vocabulary; a deterministic stage may short-circuit a later, more
+  expensive stage entirely, and an unbuilt stage is declared, not fabricated. Confidence-gated
+  override of an earlier stage by a later one is a natural extension, not itself covered by this
+  ID — it stays a backlog item until a real override path exists to evidence it. Reinforces
+  TR-AGT-002 and TR-SEC-012 at the level of pipeline architecture. Promoted from a running
+  private-monorepo classification pipeline.
 - **Graded outlet confidence (TR-SEC-015)** — an optional, more finely graded confidence about a
   specific untrusted outlet, alongside TR-SEC-011's fail-closed trust tier — never upgrading trust,
   graded from a small curated allowlist with fail-closed absence. Includes a named caution about
