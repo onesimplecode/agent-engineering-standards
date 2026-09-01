@@ -324,6 +324,24 @@ requirements:
       here — export that as its own practice once a real override path exists to
       evidence it, rather than asserting it as already covered by this ID.
 
+  - id: TR-AGT-012
+    title: Named agent authority manifests fail closed
+    status: active
+    section: "Agent Spawning"
+    text: >
+      When configuration declares a named agent endpoint, that endpoint shall declare
+      an explicit non-empty tools allowlist. Configuration loading shall fail before
+      endpoint startup when the allowlist is omitted or empty; an omitted or empty
+      list shall never inherit the complete registered tool set. A deliberately
+      unnamed legacy endpoint is a distinct compatibility mode and shall be selected
+      only by omitting the named-agent manifest entirely. Each named endpoint shall
+      register only its allowlisted tools and shall reject an allowlisted tool absent
+      from the live registry. Endpoint identities shall match the transport's safe
+      route grammar before use in a path, key, or authorization lookup. This
+      requirement controls standing tool authority, not
+      per-item data approval; a model-supplied tool argument is not owner
+      authorization evidence.
+
   - id: TR-TEST-005
     title: LLM eval files co-located with agent modules
     status: active

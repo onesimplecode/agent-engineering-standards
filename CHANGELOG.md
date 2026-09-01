@@ -5,6 +5,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-09-01
+
+### Added
+
+- **Fail-closed named agent authority manifests (TR-AGT-012)** — a named endpoint must declare
+  a non-empty tool allowlist; an omitted or empty list cannot inherit the complete registry.
+  Unnamed legacy mode is selected only by omitting the complete named-agent manifest. Includes a
+  standard-library reference implementation that rejects malformed manifests and unknown tool
+  names before endpoint construction, with tests proving a named registry exposes only declared
+  tools. This governs standing tool authority, not owner approval for individual data egress.
+
+### Fixed
+
+- **Release publisher** — resolves the public repository's canonical name before creating the
+  GitHub release, preventing the rename redirect that previously let sync/tag succeed while the
+  release-object request failed.
+- `.ruff_cache/` is ignored in the staged public tree.
+- The dual-LLM roadmap progress note no longer cites public TR-AGT-010 for a private-only
+  model-diversity guard; public TR-AGT-010 remains frozen generated tool contracts.
+
 ## [0.12.0] - 2026-08-28
 
 ### Added
@@ -559,7 +579,8 @@ cases) — both fixed prior to this release.
 - `CONTRIBUTING.md`, `SECURITY.md`, issue/PR templates, `release-check` CI workflow
 - Roadmap and changelog for intentional release cadence
 
-[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/onesimplecode/agent-engineering-standards/compare/v0.9.0...v0.10.0

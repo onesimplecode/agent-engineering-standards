@@ -6,11 +6,11 @@ and gives your CI the deterministic checks that catch it when it takes one anywa
 [![Release checks](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/release-check.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/release-check.yml)
 [![Permission guard demo](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/agent-permission-guard-demo.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/agent-permission-guard-demo.yml)
 [![Config drift demo](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/config-drift-demo.yml/badge.svg)](https://github.com/onesimplecode/agent-engineering-standards/actions/workflows/config-drift-demo.yml)
-![Tests](https://img.shields.io/badge/tests-137%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-152%20passing-brightgreen)
 ![Dependencies](https://img.shields.io/badge/dependencies-none%20(stdlib)-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-**7 scripts · 14 worked examples · 9 templates · 41 requirement IDs · 137 tests.**
+**7 scripts · 15 worked examples · 9 templates · 42 requirement IDs · 152 tests.**
 Every script runs on the Python 3 standard library alone — nothing to install.
 Every rule here was extracted from a failure in a running system, not invented
 for a blog post.
@@ -113,6 +113,7 @@ Each example plants a real failure, then catches it.
 | Model-string drift across config and docs | End-to-end requirement trace | [`examples/worked-example/`](examples/worked-example/) |
 | Rules that only work in one agent harness | Generated Cursor rules | [`examples/cursor-rules/`](examples/cursor-rules/) |
 | Agent loops with no declared exit condition or budget | Engine interface | [`examples/engine-interface/`](examples/engine-interface/) |
+| Empty named-agent manifest silently grants every tool | Named agent authority manifest | [`examples/named-agent-authority-manifest/`](examples/named-agent-authority-manifest/) |
 
 ## Reference scripts
 

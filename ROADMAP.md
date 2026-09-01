@@ -29,6 +29,7 @@ it is still waiting on.
 
 | Version | Date | Theme |
 |---|---|---|
+| [v0.13.0](CHANGELOG.md#0130---2026-09-01) | 2026-09-01 | Fail-closed named agent authority manifests (TR-AGT-012), promoted from a tested private consumer; release-publisher repair and cache hygiene |
 | [v0.12.0](CHANGELOG.md#0120---2026-08-28) | 2026-08-28 | Frozen, generated tool contracts (TR-AGT-010); disposition loop-contract field (TR-AGT-003 field 6); hybrid deterministic-then-agentic classification stage tagging (TR-AGT-011); graded outlet confidence (TR-SEC-015) — all four promoted from running private-monorepo consumers with passing drift-guard tests |
 | [v0.11.0](CHANGELOG.md#0110---2026-08-21) | 2026-08-21 | Credential-isolated broker pattern (TR-SEC-014), promoted from a running Hermes reviewer integration with real CI, lease, and restart-failure evidence |
 | [v0.10.0](CHANGELOG.md#0100---2026-08-13) | 2026-08-13 | Announcement-ready README and roadmap, `AGENTS.starter.md`, rename to Agent Engineering Standards, `TECH-DEBT` tag, drift-guard tests for the README's own factual claims |
@@ -65,6 +66,18 @@ file.
   the roadmap item remains open until a distinct coding-agent path is established,
   model changes are human-gated, the exactly-two/different-model invariant is
   machine-checked, and reviewer agreement is measured before authority promotion.
+
+  **Progress (2026-08-30):** three of four gates now met. (1) A distinct coding-agent
+  path exists — Hermes' `coder` profile (ADR-024) is a separate producer from
+  `pr-reviewer`. (2) The producer/reviewer model pairing was found to have silently
+  collapsed onto one model (`coder` and `pr-reviewer` both defaulted to
+  `z-ai/glm-5.3-flash`) and was corrected to distinct models
+  (`pr-reviewer` → `x-ai/grok-4.6`) via a reviewable config-diff PR, not a runtime
+  switch. (3) The exactly-two/different-model invariant is now machine-checked —
+  `scripts/check-model-diversity.py`, run in CI on every PR/push/weekly
+  (`governance-lint.yml`, private model-diversity guard) — so this class of drift can't recur silently.
+  Still open: reviewer agreement measured before authority promotion. Until that
+  gate closes, this item stays in Backlog, not Recently Shipped.
 
 - **Explicit precision/recall stance for AI review agents** — a reviewer's docs
   or config must state, as a declared setting, which side of the

@@ -14,6 +14,7 @@ concrete artifacts. It is intentionally limited to public, reusable evidence.
 | Self-healing metadata | Repair missing fields and flag inventions with an enrichment marker | Documented + registry | `AGENTS.md`, `registry/tr-registry.yaml` (TR-AGT-007) |
 | Capability split by determinism | Four-tier taxonomy + deciding test (forget → judgment call) | Documented + registry | `AGENTS.md`, `registry/tr-registry.yaml` (TR-AGT-008) |
 | Hooks vs schedules | Cheap deterministic on events; expensive LLM on schedules | Documented + registry | `AGENTS.md`, `registry/tr-registry.yaml` (TR-AGT-009) |
+| Named agent authority manifests | Declared named endpoints have explicit non-empty tool allowlists; loader rejects omission/emptiness and endpoint construction scopes each registry | Documented + tested example | `AGENTS.md`, `registry/tr-registry.yaml` (TR-AGT-012), `examples/named-agent-authority-manifest/` |
 | Knowledge confidence labels | Five-label claim vocabulary; contested never resolved by recency alone | Template | `templates/knowledge-confidence.md` |
 | Trigger classification | ADR-triggered trigger type | Documented + example | `examples/worked-example/`, `templates/adr.md` |
 | Behavioral mode declaration | Named, trigger-activated mode contract orthogonal to gate strictness | Documented | `AGENTS.md`, `registry/tr-registry.yaml` |

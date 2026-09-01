@@ -123,6 +123,24 @@ trusting a stale annotation — breaks on it. A generated table plus a
 CI-enforced comparison is what makes "structurally cannot drift" true rather
 than asserted.
 
+### Named Agent Authority Manifests (TR-AGT-012)
+
+When configuration declares a named agent endpoint, the endpoint must declare an
+explicit, non-empty tool allowlist. Reject an omitted or empty list before the
+endpoint starts; it must never mean “all registered tools.”
+
+An unnamed legacy endpoint is a separate compatibility choice: omit the entire
+named-agent manifest to select it. Do not represent legacy mode as an empty named
+agent. Build each named endpoint from its own registry containing only its declared
+tools, and reject a declaration that names a tool absent from the live registry.
+Validate endpoint identities against the transport's safe route grammar before using
+them in a path, key, or authorization lookup.
+
+This controls standing tool authority, not per-item data approval. A value chosen by
+the model in a tool call is not proof that an owner approved cloud or PII processing.
+See [`examples/named-agent-authority-manifest/`](examples/named-agent-authority-manifest/)
+for the standard-library reference and its tests.
+
 ### Split Capabilities by Determinism (TR-AGT-008)
 
 Before adding an agent tool or skill, classify the capability:
